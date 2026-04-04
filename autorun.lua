@@ -2,7 +2,7 @@
 local fs = require('filesystem')
 local inet = require('internet')
 
-local repoPrefix = 'https://raw.githubusercontent.com/cchudant/opencomputers/master/'
+local repoPrefix = 'https://raw.githubusercontent.com/cchudant/opencomputers/main/'
 
 local function splitParent(path)
     local file = string.gmatch('/' .. path, '/([^/]+)$')()

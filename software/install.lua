@@ -105,7 +105,7 @@ if shrcFile then
 end
 
 if not isAlreadyAdded then
-    shrcFile = io.open('/home/.shrc', 'a+') --[[@as file*]]
+    shrcFile = io.open('/home/.shrc', 'a') --[[@as file*]]
     shrcFile:write('\n' .. shrcAddition .. '\n')
     shrcFile:close()
 end

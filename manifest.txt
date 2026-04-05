@@ -1,2 +1,7 @@
+software/apis/control.lua
+software/apis/util.lua
+software/programs/update.lua
+software/programs/makeFloppy.lua
+software/programs/install.lua
+software/install.lua
 autorun.lua
-apis/control.lua

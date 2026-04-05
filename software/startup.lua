@@ -1,0 +1,1 @@
+require('shell').setPath(require('shell').getPath()..':/software/programs')

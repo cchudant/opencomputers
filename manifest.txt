@@ -3,4 +3,5 @@ software/apis/util.lua
 software/programs/update.lua
 software/programs/makeFloppy.lua
 software/programs/install.lua
+software/startup.lua
 software/install.lua

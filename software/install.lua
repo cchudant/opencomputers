@@ -86,7 +86,6 @@ downloadFile('manifest.txt', dest)
 local file = io.open(dest .. 'manifest.txt', 'r') --[[@as file*]]
 for line in file:lines() do
     downloadFile(line, dest)
-    print("")
 end
 
 print('Done! You may need to reboot your system.')

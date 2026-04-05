@@ -90,4 +90,24 @@ for line in file:lines() do
     downloadFile(line, dest)
 end
 
+local shrcAddition = "require('shell').setPath(shell.getPath()..':/software/programs')"
+
+local shrcFile = io.open('/home/.shrc', 'r')
+local isAlreadyAdded = false
+if shrcFile then
+    for line in shrcFile:lines() do
+        if line == shrcAddition then
+            isAlreadyAdded = true
+            return
+        end
+    end
+    shrcFile:close()
+end
+
+if not isAlreadyAdded then
+    shrcFile = io.open('/home/.shrc', 'a+') --[[@as file*]]
+    shrcFile:write('\n' .. shrcAddition .. '\n')
+    shrcFile:close()
+end
+
 print('Done! You may need to reboot your system.')

@@ -47,12 +47,6 @@ if not repoPrefix then
     repoPrefix = 'https://raw.githubusercontent.com/' .. repo .. '/' .. branch .. '/'
 end
 
-local upstream = io.open('/software/upstream', 'w') --[[@as file*]]
-upstream:write(repoPrefix)
-upstream:close()
-
-print('Installing from ' .. repoPrefix)
-
 local function splitParent(path)
     local file = string.gmatch('/' .. path, '/([^/]+)$')()
     local dir = path:sub(1, -file:len() - 2)
@@ -79,6 +73,14 @@ local function downloadFile(path, dest)
     end
     file:close()
 end
+
+mkdirs('/software')
+
+local upstream = io.open('/software/upstream', 'w') --[[@as file*]]
+upstream:write(repoPrefix)
+upstream:close()
+
+print('Installing from ' .. repoPrefix)
 
 local dest = '/'
 

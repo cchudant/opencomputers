@@ -1,7 +1,8 @@
 software/apis/control.lua
 software/apis/util.lua
+software/apis/nbt.lua
 software/programs/update.lua
 software/programs/makeFloppy.lua
-software/programs/install.lua
+software/programs/installSoftware.lua
 software/startup.lua
 software/install.lua

@@ -32,8 +32,7 @@ if not branch then
 end
 
 local repoPrefix
-branch = branch or 'main'
-if repo == nil then
+if repo == nil and branch == nil then
     local file = io.open('/software/upstream', 'r')
     if file then
         repoPrefix = string.gsub(file:read(), "%s+", "")
@@ -41,6 +40,7 @@ if repo == nil then
     end
 end
 
+branch = branch or 'main'
 repo = repo or 'cchudant/opencomputers'
 
 if not repoPrefix then

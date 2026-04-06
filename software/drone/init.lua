@@ -159,34 +159,43 @@ end
 computer.beep(1000, 1)
 modem.broadcast(port, "drone")
 
-local isErr = false
-local timeout = 10
-while true do
-    print('Waiting with timeout: ' .. timeout)
-    local s = { computer.pullSignal(timeout) }
-    timeout = 10
+local function main()
+    local isErr = false
+    local timeout = 10
+    while true do
+        print('Waiting with timeout: ' .. timeout)
+        local s = { computer.pullSignal(timeout) }
+        timeout = 10
 
-    print('Got signal:', table.unpack(s))
-    if s[1] == "modem_message" then
-        handleModem(s)
-    end
-    if usr then
-        print("Resuming coro")
-        drone.setLightColor(0x00ff00) -- Green: running
-
-        local e, t = coroutine.resume(usr, table.unpack(s))
-        if not e then
-            print('Routine error', t)
-            isErr = true
-            usr = nil
-        elseif type(t) == 'number' then
-            timeout = t
+        print('Got signal:', table.unpack(s))
+        if s[1] == "modem_message" then
+            handleModem(s)
         end
-    else
-        if isErr then
-            drone.setLightColor(0xff0000) -- Red: error
+        if usr then
+            print("Resuming coro")
+            drone.setLightColor(0x00ff00) -- Green: running
+
+            local e, t = coroutine.resume(usr, table.unpack(s))
+            if not e then
+                print('Routine error', t)
+                drone.setStatusText(tostring(t))
+                isErr = true
+                usr = nil
+            elseif type(t) == 'number' then
+                timeout = t
+            end
         else
-            drone.setLightColor(0xffff00) -- Yellow: waiting
+            if isErr then
+                drone.setLightColor(0xff0000) -- Red: error
+            else
+                drone.setLightColor(0xffff00) -- Yellow: waiting
+            end
         end
     end
+end
+
+local ok,e = pcall(main)
+if not ok then
+    print(e)
+    drone.setStatusText(tostring(e))
 end

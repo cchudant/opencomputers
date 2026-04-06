@@ -32,7 +32,7 @@ local buffer = ''
 
 local libsInjected = false
 
-local file = io.open('/software/eeprom.lua', 'r') --[[@as file*]]
+local file = io.open('/software/drone/eeprom.lua', 'r') --[[@as file*]]
 for line in file:lines() do
     if not libsInjected and util.stringStartsWith(line, '--[[ // include libs // ]]--') then
         buffer = buffer .. injectLibs() .. '\n'

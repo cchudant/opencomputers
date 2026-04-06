@@ -25,8 +25,8 @@ local function writeWithColor(text, color)
         reset = term.gpu().getForeground()
         term.gpu().setForeground(color)
     end
-    io.stdout:write(text)
-    io.stdout:flush()
+    _G.io.stdout:write(text)
+    _G.io.stdout:flush()
     if term.gpu then
         term.gpu().setForeground(reset)
     end

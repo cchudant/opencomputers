@@ -28,24 +28,20 @@ local function injectLibs()
     return buffer
 end
 
-function flash.flash()
-    local buffer = ''
+local buffer = ''
 
-    local libsInjected = false
+local libsInjected = false
 
-    local file = io.open('/software/eeprom.lua', 'r') --[[@as file*]]
-    for line in file:lines() do
-        if not libsInjected and util.stringStartsWith(line, '--[[ // include libs // ]]--') then
-            buffer = buffer .. injectLibs() .. '\n'
-            libsInjected = true
-        else
-            buffer = buffer .. line
-        end
+local file = io.open('/software/eeprom.lua', 'r') --[[@as file*]]
+for line in file:lines() do
+    if not libsInjected and util.stringStartsWith(line, '--[[ // include libs // ]]--') then
+        buffer = buffer .. injectLibs() .. '\n'
+        libsInjected = true
+    else
+        buffer = buffer .. line
     end
-    file:close()
-
-    component.eeprom.set(buffer)
-    print("Done!")
 end
+file:close()
 
-return flash
+component.eeprom.set(buffer)
+print("Done!")

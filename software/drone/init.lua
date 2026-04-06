@@ -1,4 +1,4 @@
-local flashPort, gpsPort = 20, 46
+local port, gpsPort = 20, 46
 
 for add, typ in pairs(component.list()) do
     if _ENV[typ] == nil then
@@ -7,13 +7,13 @@ for add, typ in pairs(component.list()) do
 end
 
 function print(...)
-    local args = table.pack(...)
-    local msg = ""
-    for i = 1, args.n do
-        if i > 1 then msg = msg .. '\t' end
-        msg = msg .. (tostring(args[i]) or '<unknown>')
+    local a = table.pack(...)
+    local m = ""
+    for i = 1, a.n do
+        if i > 1 then m = m .. '\t' end
+        m = m .. (tostring(a[i]) or '<unknown>')
     end
-    modem.broadcast(flashPort, "log", msg)
+    modem.broadcast(port, "log", m)
 end
 
 ---@type drone.Position
@@ -22,7 +22,7 @@ drone.position = { 0, 0, 0 }
 drone.home = { 0, 0, 0 }
 
 ---List of previous gps messages, one per station.
-drone.gpsMessages = {}
+drone.gpsMsgs = {}
 
 ---@alias drone.Position [number, number, number]
 
@@ -34,32 +34,30 @@ end
 ---Move the drone relative to the current location.
 ---@overload fun(x: number, y: number, z: number)
 ---@overload fun(pos: drone.Position)
-function drone.moveRel(...)
-    local arg = { ... }
-    if type(arg[1]) == "table" then
-        arg = arg[1]
+function drone.moveRel(x, y, z)
+    if type(x) == "table" then
+        x, y, z = table.unpack(x)
     end
-    local pos = drone.position
+    local p = drone.position
     drone.moving = true
-    drone.gpsMessages = {} -- Clear gps messages.
-    component.invoke(drone.address, "move", arg[1], arg[2], arg[3])
+    drone.gpsMsgs = {} -- Clear gps messages.
+    component.invoke(drone.address, "move", x, y, z)
     while not drone.isStill() do
         drone.sleep(0.1) -- Wait for drone to be still.
     end
-    drone.position = { pos[1] + arg[1], pos[2] + arg[2], pos[3] + arg[3] }
+    drone.position = { p[1] + x, p[2] + y, p[3] + z }
     drone.moving = false
 end
 
 ---Move to a position.
 ---@overload fun(x: number, y: number, z: number)
 ---@overload fun(pos: drone.Position)
-function drone.moveTo(...)
-    local arg = { ... }
-    if type(arg[1]) == "table" then
-        arg = arg[1]
+function drone.moveTo(x, y, z)
+    if type(x) == "table" then
+        x, y, z = table.unpack(x)
     end
-    local pos = drone.position
-    drone.move(arg[1] - pos[1], arg[2] - pos[2], arg[3] - pos[3])
+    local p = drone.position
+    drone.move(x - p[1], y - p[2], z - p[3])
 end
 
 ---Returns true if the drone is still.
@@ -67,32 +65,17 @@ function drone.isStill()
     return (drone.getOffset() < .05 and drone.getVelocity() < .05)
 end
 
-local userCode = ""
+local code = ""
 local usr = nil
 local function userRoutine()
-    local func, err = load(userCode)
-    if not func then error(err) end
-    func()
+    local f, e = load(code)
+    if not f then error(e) end
+    f()
     usr = nil
 end
 
-local modemHandlers = {}
-function modemHandlers.echo(signal)
-    modem.send(signal[3], "drone")
-end
-
-function modemHandlers.flash(signal)
-    userCode = signal[7]
-    computer.beep(1000, 1)
-    usr = nil
-end
-
-function modemHandlers.start(_)
-    usr = coroutine.create(userRoutine)
-end
-
-local function inv3(matrix)
-    local a, b, c, d, e, f, g, h, i = table.unpack(matrix)
+local function inv3(M)
+    local a, b, c, d, e, f, g, h, i = table.unpack(M)
     local det = a * (e * i - f * h) - b * (d * i - f * g) + c * (d * h - e * g)
     if det == 0 then
         return {}
@@ -105,7 +88,7 @@ local function inv3(matrix)
     }
 end
 
-local function calculatePoint(stations)
+local function calcPoint(stations)
     local s = stations
     local M = {}
     for i = 2, 4 do
@@ -128,82 +111,79 @@ local function calculatePoint(stations)
     end
     return v2
 end
-
-function modemHandlers.gps(signal)
-    local _, _, station, _, distance, _, x, y, z = table.unpack(signal)
-    local timestamp = computer.uptime()
-
-    if drone.moving then
-        return
-    end
-
-    local i = 1 -- List remove if
-    while i < #drone.gpsMessages do
-        if drone.gpsMessages[i].station == station then
-            table.remove(drone.gpsMessages, i)
-        else
-            i = i + 1
+local function handleModem(s)
+    if s[6] == 'echo' then
+        modem.send(s[3], "drone")
+    elseif s[6] == 'flash' then
+        code = s[7]
+        computer.beep(1000, 1)
+        usr = nil
+    elseif s[6] == 'start' then
+        usr = coroutine.create(userRoutine)
+    elseif s[6] == "GPS" then
+        local _, _, st, _, dist, _, x, y, z = table.unpack(s)
+        if drone.moving then
+            return
         end
-    end
-    table.insert(drone.gpsMessages, { station = station, ts = timestamp, pos = { x, y, z, distance } })
-    if #drone.gpsMessages >= 4 then
-        local stations = {}
-        for _, el in ipairs(drone.gpsMessages) do
-            table.insert(stations, el.pos)
-        end
-        local success, result = pcall(calculatePoint, stations)
-        if success then
-            drone.position = result
-            drone.gpsUpdatedAt = computer.uptime()
-        else
-            print('GPS Error: ', result)
-        end
-    end
-end
 
-local function handleModem(signal)
-    if signal[4] == flashPort then
-        if modemHandlers[signal[6]] then
-            modemHandlers[signal[6]](signal)
+        local i = 1 -- List remove if
+        while i < #drone.gpsMsgs do
+            if drone.gpsMsgs[i].st == st then
+                table.remove(drone.gpsMsgs, i)
+            else
+                i = i + 1
+            end
         end
-    elseif signal[6] == "GPS" then
-        modemHandlers["gps"](signal)
+        table.insert(drone.gpsMsgs, { st = st, pos = { x, y, z, dist } })
+        if #drone.gpsMsgs >= 4 then
+            local sts = {}
+            for _, el in ipairs(drone.gpsMsgs) do
+                table.insert(sts, el.pos)
+            end
+            local success, result = pcall(calcPoint, sts)
+            if success then
+                drone.position = result
+                drone.gpsUpdatedAt = computer.uptime()
+            else
+                print('GPS Error: ', result)
+            end
+        end
     end
 end
 
 if modem ~= nil then
-    modem.open(flashPort)
+    modem.open(port)
     modem.open(gpsPort)
 end
 
 computer.beep(1000, 1)
-modem.broadcast(flashPort, "drone")
+modem.broadcast(port, "drone")
 
-local errored = false
+local isErr = false
 local timeout = 10
 while true do
     print('Waiting with timeout: ' .. timeout)
-    local signal = { computer.pullSignal(timeout) }
+    local s = { computer.pullSignal(timeout) }
     timeout = 10
 
-    print('Got signal:', table.unpack(signal))
-    if signal[1] == "modem_message" then
-        handleModem(signal)
+    print('Got signal:', table.unpack(s))
+    if s[1] == "modem_message" then
+        handleModem(s)
     end
     if usr then
         print("Resuming coro")
         drone.setLightColor(0x00ff00) -- Green: running
 
-        local ret = { coroutine.resume(usr, table.unpack(signal)) }
-        if not ret[1] then
-            print('Routine error', ret[2])
-            errored = true
+        local e, t = coroutine.resume(usr, table.unpack(s))
+        if not e then
+            print('Routine error', t)
+            isErr = true
             usr = nil
-        elseif type(ret[2]) == 'number' then
-            timeout = ret[2]
+        elseif type(t) == 'number' then
+            timeout = t
         end
     else
-        if errored then
+        if isErr then
             drone.setLightColor(0xff0000) -- Red: error
         else
             drone.setLightColor(0xffff00) -- Yellow: waiting

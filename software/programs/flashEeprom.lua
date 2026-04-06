@@ -15,9 +15,9 @@ local function injectLibs()
         local file = io.open(path, 'r')
         if not file then error(string.format('file not found: %s')) end
 
-        local content = file:read("a"):gsub('--.+', ''):gsub('\\s+', '')
+        local content = file:read("a"):gsub('--.+\n', ''):gsub('\\s+', ' ')
 
-        buffer = buffer .. 'do\n'
+        buffer = buffer .. '\ndo\n'
             .. 'local res, err = load([[\n' .. content .. '\n'
             .. ']], "=" .. path, "bt", _G)\n'
             .. 'if err then return nil, err end\n'

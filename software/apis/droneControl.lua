@@ -65,7 +65,7 @@ function droneControl.logDrones()
     while true do
         local ev = { event.pull('modem_message') }
         local addr = ev[3]
-        local color = (tonumber(string.sub(addr, -6), 16) % (#goodColors - 1) + 1)
+        local color = goodColors[(tonumber(string.sub(addr, -6), 16) % (#goodColors - 1) + 1)]
         local shortAddr = string.sub(addr, 1, 6)
         if ev[6] == 'drone' then
             writeWithColor("[", gray)

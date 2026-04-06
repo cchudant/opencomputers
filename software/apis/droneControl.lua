@@ -22,12 +22,12 @@ local goodColors = {
 local function writeWithColor(text, color)
     local reset
     if term.gpu then
-        reset = term.gpu.getForeground()
-        term.gpu.setForeground(color)
+        reset = term.gpu().getForeground()
+        term.gpu().setForeground(color)
     end
     term.write(text)
     if term.gpu then
-        term.gpu.setForeground(reset)
+        term.gpu().setForeground(reset)
     end
 end
 

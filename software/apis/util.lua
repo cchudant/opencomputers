@@ -773,4 +773,13 @@ function util.stringStartsWith(str, prefix)
     return string.sub(str, 1, string.len(prefix)) == prefix
 end
 
+--- Checks whether a string ends with a given suffix.
+---
+--- @param str string
+--- @param suffix string
+--- @return boolean
+function util.stringEndsWith(str, suffix)
+    return string.sub(str, -string.len(suffix)) == suffix
+end
+
 return util

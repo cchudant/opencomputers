@@ -25,7 +25,7 @@ local function writeWithColor(text, color)
         reset = term.gpu().getForeground()
         term.gpu().setForeground(color)
     end
-    term.write(text)
+    print(text)
     if term.gpu then
         term.gpu().setForeground(reset)
     end
@@ -73,7 +73,7 @@ function droneControl.logDrones()
             writeWithColor(" online]\n", gray)
         elseif ev[6] == 'log' then
             writeWithColor(shortAddr, color)
-            writeWithColor(": " .. ev[7] .. "\n", 0xffffff)
+            writeWithColor(": " .. ev[7] .. "\n", gray)
         end
     end
 end

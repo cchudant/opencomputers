@@ -15,14 +15,14 @@ local function injectLibs()
         local file = io.open(path, 'r')
         if not file then error(string.format('file not found: %s')) end
 
-        local content = file:read("a"):gsub('--.+\n', ''):gsub('\\s+', ' ')
+        local content = file:read("a"):gsub('--.+\n', '\n'):gsub('\\s+', ' ')
 
         buffer = buffer .. '\ndo\n'
             .. 'local res, err = load([[\n' .. content .. '\n'
             .. ']], "=" .. path, "bt", _G)\n'
             .. 'if err then return nil, err end\n'
             .. 'require.loaded["' .. module .. '"] = res\n'
-            .. 'end'
+            .. 'end\n'
 
         file:close()
     end

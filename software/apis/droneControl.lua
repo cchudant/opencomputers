@@ -38,15 +38,15 @@ local flashPort = 20
 local droneControl = {}
 
 function droneControl.flashEeprom()
-    local file = io.open('/software/drone/init.lua', 'r') --[[@as file*]]
+    local file = io.open('/software/drone/compiled', 'r') --[[@as file*]]
     local buffer = file:read('a')
     file:close()
 
-    print('Size before minification: ' .. buffer:len() .. ' bytes')
-    -- this minification is dumb and doesnt always work. oh well.
-    buffer = buffer:gsub('[-][-][^\n]+', ''):gsub('\\s+', ' ')
+    -- print('Size before minification: ' .. buffer:len() .. ' bytes')
+    -- -- this minification is dumb and doesnt always work. oh well.
+    -- buffer = buffer:gsub('[-][-][^\n]+', ''):gsub('\\s+', ' ')
 
-    print('Size after minification: ' .. buffer:len() .. ' bytes')
+    -- print('Size after minification: ' .. buffer:len() .. ' bytes')
 
     if not eeprom then
         print('No eeprom found.')

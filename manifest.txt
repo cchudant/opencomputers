@@ -9,4 +9,4 @@ software/programs/logDrones.lua
 software/programs/gps.lua
 software/startup.lua
 software/install.lua
-software/drone/init.lua
+software/drone/compiled

@@ -45,7 +45,7 @@ end
 file:close()
 
 print('Size before minification: ' .. buffer:len() .. ' bytes')
-buffer = buffer:gsub('--.+\n', '\n'):gsub('\\s+', ' ')
+buffer = buffer:gsub('[-][-][^\n]+', ''):gsub('\\s+', ' ')
 
 print('Size after minification: ' .. buffer:len() .. ' bytes')
 

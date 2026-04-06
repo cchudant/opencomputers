@@ -15,10 +15,7 @@ local function injectLibs()
         local file = io.open(path, 'r')
         if not file then error(string.format('file not found: %s')) end
 
-        local content = ''
-        for el in file:lines() do
-            content = content .. el
-        end
+        local content = file:read('a')
 
         buffer = buffer .. '\ndo\n'
             .. 'local res, err = load([[\n' .. content .. '\n'

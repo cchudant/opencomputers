@@ -1,9 +1,10 @@
 local component = require('component')
 local me = component.me_controller
 
+---set minimums for each tier of water, in order
 local minimumstock={5000000, 2000000, 2000000, 1000000, 1000000, 1000000, 1000000, 1000000}
-local multipliers={4369, 4369, 1092, 1092, 273, 273, 68, 17}
 
+---register waterline units and return table of tier and proxy for machine of that tier
 local function register_units()
     local unitstable={}
     for address in component.list('gt_machine') do
@@ -11,7 +12,7 @@ local function register_units()
         local name = module.getName()
         local tier
         if string.find(name, "clarifier") then
-            tier = 1
+            tier=1
         end
         if string.find(name, "ozonation") then
             tier=2
@@ -41,6 +42,7 @@ local function register_units()
     return unitstable
 end
 
+---poll fluid amounts for each water type from ME
 local function poll_fluids()
     local networkfluids = me.getFluidsInNetwork()
     local waters = {}
@@ -51,6 +53,8 @@ local function poll_fluids()
             end
         end
     end
+
+    ---if there  is no water, add entry with amount of 0 for that tier to avoid nils
     for i=1,8 do
         if not waters[i] then
             waters[i]=0
@@ -67,14 +71,17 @@ local waitingforwork=false
 local lastactive=0
 
 while true do
+
     if nextactive==0 then
+        ---first check for water types that are under the minimum, starting from tier 1
         for i=1,8 do
             if water_stocks[i]<minimumstock[i] then
                 nextactive = i
                 break
             end
         end
-
+        
+        ---if no water is below minimum, even out water types by checking each tier from the top and see if the previous tier is farther above minimum
         if nextactive == 0 then
             for i=1,7 do
                 x=9-i
@@ -84,14 +91,20 @@ while true do
                 end
             end
         end
+
+        ---if nothing else has been found based on previous priorities, make t1 water
         if nextactive == 0 then
             nextactive = 1
         end
     end
-    if not waitingforwork and nextactive ~= 0 then
+
+    ---if the next craft is not queued yet, queue it by turning on power to that machine--it won't actually start until the next waterline cycle
+    if not waitingforwork then
         waterline[nextactive].setWorkAllowed(true)
         waitingforwork=true
         print("Requesting Tier "..nextactive.." water.")
+
+    ---if next craft is queued, check to see if it has actually started the craft yet. if so, clear variables to allow queueing of following craft
     else
         if waterline[nextactive].isMachineActive() then
             print("Making Tier "..nextactive.." water.")
@@ -102,6 +115,7 @@ while true do
             water_stocks = poll_fluids()
         end
     end
+    ---if the next craft is same as the current, sleep 120s to avoid constantly queuing and then clearing. otherwise sleep for 10s.
     if lastactive==nextactive then
         os.sleep(120)
     else

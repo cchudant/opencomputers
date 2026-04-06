@@ -15,7 +15,10 @@ local function injectLibs()
         local file = io.open(path, 'r')
         if not file then error(string.format('file not found: %s')) end
 
-        local content = file:read("a"):gsub('--.+\n', '\n'):gsub('\\s+', ' ')
+        local content = ''
+        for el in file:lines() do
+            content = content .. el
+        end
 
         buffer = buffer .. '\ndo\n'
             .. 'local res, err = load([[\n' .. content .. '\n'
@@ -40,6 +43,11 @@ for line in file:lines() do
     end
 end
 file:close()
+
+print('Size before minification: ' .. buffer:len() .. ' bytes')
+buffer = buffer:gsub('--.+\n', '\n'):gsub('\\s+', ' ')
+
+print('Size after minification: ' .. buffer:len() .. ' bytes')
 
 print('Size: ' .. buffer:len() .. ' / ' .. component.eeprom.getSize())
 

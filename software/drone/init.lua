@@ -198,4 +198,6 @@ local ok,e = pcall(main)
 if not ok then
     print(e)
     drone.setStatusText(tostring(e))
+    drone.setLightColor(0xff0000) -- Red: error
+    drone.sleep(300)
 end

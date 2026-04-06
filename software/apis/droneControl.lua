@@ -73,7 +73,7 @@ function droneControl.logDrones()
             writeWithColor(" online]", gray)
         elseif ev[6] == 'log' then
             writeWithColor(shortAddr, color)
-            writeWithColor(": " .. ev[7], 0)
+            writeWithColor(": " .. ev[7], 0xffffff)
         end
     end
 end

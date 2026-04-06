@@ -1,2 +1,2 @@
 local droneControl = require('.software.apis.droneControl')
-droneControl.flashEeprom()
+droneControl.logDrones()

@@ -1,10 +1,12 @@
 software/apis/control.lua
 software/apis/util.lua
-software/apis/nbt.lua
+software/apis/droneControl.lua
 software/programs/update.lua
 software/programs/makeFloppy.lua
 software/programs/installSoftware.lua
+software/programs/flashEeprom.lua
+software/programs/logDrones.lua
+software/programs/gps.lua
 software/startup.lua
 software/install.lua
-software/drone/eeprom.lua
-software/programs/flashEeprom.lua
+software/drone/init.lua

@@ -97,13 +97,16 @@ end
 
 local function calcPoint(s)
     for i, el in ipairs(s) do print(i, table.unpack(el)) end
+    print('a')
     local M = {}
     for i = 2, 4 do
         for j = 1, 3 do
             M[(i - 2) * 3 + j] = 2 * (s[i][j] - s[1][j])
         end
     end
+    print('b')
     local Mi = inv3(M)
+    print('c')
     local v = { 0, 0, 0 }
     for i = 1, 3 do
         local m = -1
@@ -112,10 +115,12 @@ local function calcPoint(s)
             m = 1
         end
     end
+    print('d')
     local v2 = {}
     for i = 1, 9, 3 do
         table.insert(v2, v[1] * Mi[i] + v[2] * Mi[i + 1] + v[3] * Mi[i + 2])
     end
+    print('e')
     return v2
 end
 local function handleModem(s)
@@ -206,7 +211,7 @@ local function main()
 
         local ts = computer.uptime()
         if not drone.moving and
-            (not drone.gpsUpdatedAt or ts > drone.gpsUpdatedAt + 3) and (not lastGpsPing or ts > lastGpsPing + 3) then
+            (not drone.gpsUpdatedAt or ts > drone.gpsUpdatedAt + 30) and (not lastGpsPing or ts > lastGpsPing + 5) then
             print('pinging gps')
             modem.broadcast(gpsPort, 'PING')
             lastGpsPing = ts

@@ -152,9 +152,9 @@ local function handleModem(s)
             end
             local ok, r = pcall(calcPoint, sts)
             if ok then
-                drone.position = r
+                drone.position = { r[1] + .5, r[2] + .5, r[3] + .5 }
                 drone.gpsUpdatedAt = computer.uptime()
-                print('GPS position: ', table.unpack(r))
+                print('GPS position: ', table.unpack(drone.position))
             else
                 print('GPS Error: ', r)
             end

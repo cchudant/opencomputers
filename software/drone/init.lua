@@ -168,6 +168,12 @@ local function main()
     local isErr = false
     local timeout = 10
     while true do
+        if isErr then
+            drone.setLightColor(0xff0000) -- Red: error
+        else
+            drone.setLightColor(0xffff00) -- Yellow: waiting
+        end
+
         print('Waiting with timeout: ' .. timeout)
         local s = { computer.pullSignal(timeout) }
         timeout = 10
@@ -188,12 +194,6 @@ local function main()
                 usr = nil
             elseif type(t) == 'number' then
                 timeout = t
-            end
-        else
-            if isErr then
-                drone.setLightColor(0xff0000) -- Red: error
-            else
-                drone.setLightColor(0xffff00) -- Yellow: waiting
             end
         end
     end

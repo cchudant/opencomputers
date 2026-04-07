@@ -61,7 +61,7 @@ function drone.moveTo(x, y, z)
         x, y, z = table.unpack(x)
     end
     local p = drone.position
-    drone.move(x - p[1], y - p[2], z - p[3])
+    drone.moveRel(x - p[1], y - p[2], z - p[3])
 end
 
 ---Returns true if the drone is still.

@@ -4,6 +4,7 @@
 -- of doing it, among other things.
 
 local port, gpsPort = 20, 46
+local isErr = false
 
 for add, typ in pairs(component.list()) do
     if _ENV[typ] == nil then
@@ -73,6 +74,7 @@ end
 local code = ""
 local usr = nil
 local function userRoutine()
+    isErr = false
     local f, e = load(code)
     if not f then error(e) end
     f()
@@ -93,8 +95,8 @@ local function inv3(M)
     }
 end
 
-local function calcPoint(stations)
-    local s = stations
+local function calcPoint(s)
+    for i, el in ipairs(s) do print(i, table.unpack(el)) end
     local M = {}
     for i = 2, 4 do
         for j = 1, 3 do
@@ -123,6 +125,7 @@ local function handleModem(s)
         code = s[7]
         computer.beep(1000, 1)
         usr = nil
+        isErr = false
     elseif s[6] == 'start' then
         usr = coroutine.create(userRoutine)
     elseif s[6] == "GPS" then
@@ -145,8 +148,8 @@ local function handleModem(s)
                 table.remove(drone.gpsMsgs, #drone.gpsMsgs)
             end
             local sts = {}
-            for i = 1, 4 do
-                table.insert(sts, drone.gpsMsgs[i].pos)
+            for j = 1, 4 do
+                table.insert(sts, drone.gpsMsgs[j].pos)
             end
             local success, result = pcall(calcPoint, sts)
             if success then
@@ -170,8 +173,7 @@ modem.broadcast(port, "drone")
 local lastGpsPing = computer.uptime()
 
 local function main()
-    local isErr = false
-    local timeout = 3
+    local timeout = 5
     while true do
         if isErr then
             drone.setLightColor(0xff0000) -- Red: error
@@ -181,7 +183,7 @@ local function main()
 
         print('Waiting with timeout: ' .. timeout)
         local s = { computer.pullSignal(timeout) }
-        timeout = 3
+        timeout = 5
 
         print('Got signal:', table.unpack(s))
         if s[1] == "modem_message" then
@@ -191,8 +193,8 @@ local function main()
             print("Resuming coro")
             drone.setLightColor(0x00ff00) -- Green: running
 
-            local e, t = coroutine.resume(usr, table.unpack(s))
-            if not e then
+            local ok, t = coroutine.resume(usr, table.unpack(s))
+            if not ok then
                 print('Routine error', t)
                 drone.setStatusText(tostring(t))
                 isErr = true
@@ -203,7 +205,7 @@ local function main()
         end
 
         local ts = computer.uptime()
-        if not drone.moving and computer.uptime() > lastGpsPing + 3 then
+        if not drone.moving and ts > drone.gpsUpdatedAt + 3 and ts > lastGpsPing + 3 then
             modem.broadcast(gpsPort, 'PING')
             lastGpsPing = ts
         end

@@ -132,7 +132,7 @@ while true do
     ---see if next craft has started.
     else
         if active ~= 0 then
-            local timeleft = 120-((waterline[active].getWorkProgress()/waterline[active].getMaxWorkProgress())*120)
+            local timeleft = 120-((waterline[active].getWorkProgress()/waterline[active].getWorkMaxProgress())*120)
             os.sleep(timeleft+1)
         else
             os.sleep(120)

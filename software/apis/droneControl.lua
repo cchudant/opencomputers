@@ -85,7 +85,10 @@ end
 ---@overload fun(droneAddr: string, path: string) flash a specific drone
 ---@overload fun(path: string) flash to every drone in range
 function droneControl.flash(droneAddr, path)
-    if not path then path = droneAddr end
+    if not path then
+        path = droneAddr
+        path = nil
+    end
     local file = io.open(path, 'r')
     if not file then
         error('File not found: "' .. path .. '"')

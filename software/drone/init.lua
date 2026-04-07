@@ -85,7 +85,7 @@ local function inv3(M)
     local a, b, c, d, e, f, g, h, i = table.unpack(M)
     local det = a * (e * i - f * h) - b * (d * i - f * g) + c * (d * h - e * g)
     if det == 0 then
-        return {}
+        error('ambiguous')
     end
     local id = 1 / det
     return {
@@ -96,17 +96,13 @@ local function inv3(M)
 end
 
 local function calcPoint(s)
-    for i, el in ipairs(s) do print(i, table.unpack(el)) end
-    print('a')
     local M = {}
     for i = 2, 4 do
         for j = 1, 3 do
             M[(i - 2) * 3 + j] = 2 * (s[i][j] - s[1][j])
         end
     end
-    print('b')
     local Mi = inv3(M)
-    print('c')
     local v = { 0, 0, 0 }
     for i = 1, 3 do
         local m = -1
@@ -115,14 +111,10 @@ local function calcPoint(s)
             m = 1
         end
     end
-    print('d', table.unpack(v))
-    print('d', table.unpack(Mi))
     local v2 = {}
     for i = 1, 9, 3 do
-        print('d2', i, Mi[i], Mi[i + 1], Mi[i + 2])
         table.insert(v2, v[1] * Mi[i] + v[2] * Mi[i + 1] + v[3] * Mi[i + 2])
     end
-    print('e')
     return v2
 end
 local function handleModem(s)
@@ -158,12 +150,13 @@ local function handleModem(s)
             for j = 1, 4 do
                 table.insert(sts, drone.gpsMsgs[j].pos)
             end
-            local success, result = pcall(calcPoint, sts)
-            if success then
-                drone.position = result
+            local ok, r = pcall(calcPoint, sts)
+            if ok then
+                drone.position = r
                 drone.gpsUpdatedAt = computer.uptime()
+                print('GPS position: ', table.unpack(r))
             else
-                print('GPS Error: ', result)
+                print('GPS Error: ', r)
             end
         end
     end
@@ -188,11 +181,16 @@ local function main()
             drone.setLightColor(0xffff00) -- Yellow: waiting
         end
 
-        print('Waiting with timeout: ' .. timeout)
+        local ts = computer.uptime()
+        if not drone.moving and
+            (not drone.gpsUpdatedAt or ts > drone.gpsUpdatedAt + 30) and (not lastGpsPing or ts > lastGpsPing + 5) then
+            modem.broadcast(gpsPort, 'PING')
+            lastGpsPing = ts
+        end
+
         local s = { computer.pullSignal(timeout) }
         timeout = 5
 
-        print('Got signal:', table.unpack(s))
         if s[1] == "modem_message" then
             handleModem(s)
         end
@@ -209,14 +207,6 @@ local function main()
             elseif type(t) == 'number' then
                 timeout = t
             end
-        end
-
-        local ts = computer.uptime()
-        if not drone.moving and
-            (not drone.gpsUpdatedAt or ts > drone.gpsUpdatedAt + 30) and (not lastGpsPing or ts > lastGpsPing + 5) then
-            print('pinging gps')
-            modem.broadcast(gpsPort, 'PING')
-            lastGpsPing = ts
         end
     end
 end

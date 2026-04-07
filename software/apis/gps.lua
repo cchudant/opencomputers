@@ -1,4 +1,4 @@
--- Modified from https://github.com/DOOBW/OC-GPS.
+-- Modified from https://github.com/DOOBW/OC-GPS, which is a port of computercraft's gps api.
 
 local component = require('component')
 local computer = require('computer')

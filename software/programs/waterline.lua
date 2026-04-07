@@ -133,8 +133,9 @@ while true do
     else
         if active ~= 0 then
             local timeleft = 120-((waterline[active].getWorkProgress()/waterline[active].getMaxWorkProgress())*120)
+            os.sleep(timeleft+1)
         end
-        os.sleep(timeleft+1)
+        
         if waterline[nextactive].isMachineActive() then
             print("Making Tier "..nextactive.." water.")
             waterline[nextactive].setWorkAllowed(false)

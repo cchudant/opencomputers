@@ -1,3 +1,8 @@
+-- Originated from https://gist.github.com/Dudblockman/72fc410c88124d212e470fb481852492,
+-- heavily modified.
+-- The original had its coroutine handling done very differently, I fixed it to the proper way
+-- of doing it, among other things.
+
 local port, gpsPort = 20, 46
 
 for add, typ in pairs(component.list()) do
@@ -113,7 +118,7 @@ local function calcPoint(stations)
 end
 local function handleModem(s)
     if s[6] == 'echo' then
-        modem.send(s[3], "drone")
+        modem.send(s[3], port, "drone")
     elseif s[6] == 'flash' then
         code = s[7]
         computer.beep(1000, 1)
@@ -194,7 +199,7 @@ local function main()
     end
 end
 
-local ok,e = pcall(main)
+local ok, e = pcall(main)
 if not ok then
     print(e)
     drone.setStatusText(tostring(e))

@@ -2,7 +2,7 @@ local component = require('component')
 local me = component.me_controller
 
 ---set minimums for each tier of water, in order
-local minimumstock={5000000, 2000000, 2000000, 1000000, 1000000, 1000000, 1000000, 1000000}
+local minimumstock={1000000, 1000000, 1000000, 1000000, 1000000, 1000000, 1000000, 1000000}
 
 ---register waterline units and return table of tier and proxy for machine of that tier
 local function register_units()
@@ -68,23 +68,47 @@ local waterline = register_units()
 local water_stocks = poll_fluids()
 local nextactive = 0
 local waitingforwork=false
-local lastactive=0
+local active=0
+local replenishingstock=0
+local tempmin={}
 
 while true do
 
+    local replenishingstock=0
     if nextactive==0 then
         ---first check for water types that are under the minimum, starting from tier 1
-        for i=1,8 do
-            if water_stocks[i]<minimumstock[i] then
-                nextactive = i
-                break
+        if #tempmin==0 then
+            for i=1,8 do
+                if water_stocks[i]<minimumstock[i] then
+                    replenishingstock=i
+                end
             end
         end
         
+        if replenishingstock~=0 and #tempmin==0 then
+            local target = minimumstock[replenishingstock]-water_stocks[replenishingstock]
+
+            for i=1,replenishingstock do
+                tempmin[i] = target * (10/9)^(replenishingstock-i)
+            end
+        end
+
+        for i=1, replenishingstock do
+            if water_stocks[i]<tempmin[i] then
+                nextactive=i
+                break
+            else
+                tempmin[i]=0
+            end
+            if i==replenishingstock then
+                tempmin={}
+                replenishingstock=0
+            end
+        end
         ---if no water is below minimum, even out water types by checking each tier from the top and see if the previous tier is farther above minimum
         if nextactive == 0 then
             for i=1,7 do
-                x=9-i
+                local x=9-i
                 if water_stocks[x]-minimumstock[x] < water_stocks[x-1]-minimumstock[x-1] then
                     nextactive=x
                     break
@@ -104,21 +128,18 @@ while true do
         waitingforwork=true
         print("Requesting Tier "..nextactive.." water.")
 
-    ---if next craft is queued, check to see if it has actually started the craft yet. if so, clear variables to allow queueing of following craft
+    ---if next craft is queued, calculate time for current craft to finish and then sleep 1 second longer than that before checking to 
+    ---see if next craft has started.
     else
+        local timeleft = 120-((waterline[active].getWorkProgress()/waterline[active].getMaxWorkProgress())*120)
+        os.sleep(timeleft+1)
         if waterline[nextactive].isMachineActive() then
             print("Making Tier "..nextactive.." water.")
             waterline[nextactive].setWorkAllowed(false)
             waitingforwork=false
-            lastactive=nextactive
+            active=nextactive
             nextactive=0
             water_stocks = poll_fluids()
         end
-    end
-    ---if the next craft is same as the current, sleep 120s to avoid constantly queuing and then clearing. otherwise sleep for 10s.
-    if lastactive==nextactive then
-        os.sleep(120)
-    else
-        os.sleep(10)
     end
 end

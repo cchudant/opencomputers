@@ -13,3 +13,7 @@ drone.sleep(10)
 print('moving to home ', table.unpack(home))
 
 drone.moveTo(home)
+
+drone.sleep(10)
+
+print('done?')

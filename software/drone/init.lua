@@ -66,7 +66,7 @@ end
 
 ---Returns true if the drone is still.
 function drone.isStill()
-    return (drone.getOffset() < .05 and drone.getVelocity() < .05)
+    return drone.getOffset() < .05 and drone.getVelocity() < .05
 end
 
 local code = ""

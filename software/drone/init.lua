@@ -24,8 +24,6 @@ end
 
 ---@type drone.Position
 drone.position = { 0, 0, 0 }
----@type drone.Position
-drone.home = { 0, 0, 0 }
 
 ---List of previous gps messages, one per station.
 drone.gpsMsgs = {}

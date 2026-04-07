@@ -5,7 +5,11 @@ end
 
 local home = drone.position
 
+print('moving to there')
 moveToBlock(572,141,-501)
 
 drone.sleep(10)
+
+print('moving to home ', table.unpack(home))
+
 drone.moveTo(home)

@@ -60,6 +60,9 @@ function droneControl.flashEeprom()
 end
 
 function droneControl.logDrones()
+    if term.gpu then
+        term.gpu().setResolution(term.gpu().maxResolution())
+    end
     modem.open(flashPort)
     modem.broadcast(flashPort, 'echo')
     print('Listening.')

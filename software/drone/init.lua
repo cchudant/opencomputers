@@ -164,9 +164,11 @@ end
 computer.beep(1000, 1)
 modem.broadcast(port, "drone")
 
+local lastGpsPing = computer.uptime()
+
 local function main()
     local isErr = false
-    local timeout = 10
+    local timeout = 3
     while true do
         if isErr then
             drone.setLightColor(0xff0000) -- Red: error
@@ -176,7 +178,7 @@ local function main()
 
         print('Waiting with timeout: ' .. timeout)
         local s = { computer.pullSignal(timeout) }
-        timeout = 10
+        timeout = 3
 
         print('Got signal:', table.unpack(s))
         if s[1] == "modem_message" then
@@ -195,6 +197,12 @@ local function main()
             elseif type(t) == 'number' then
                 timeout = t
             end
+        end
+
+        local ts = computer.uptime()
+        if not drone.moving and computer.uptime() > lastGpsPing + 3 then
+            modem.broadcast(gpsPort, 'PING')
+            lastGpsPing = ts
         end
     end
 end

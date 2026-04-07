@@ -139,11 +139,14 @@ local function handleModem(s)
                 i = i + 1
             end
         end
-        table.insert(drone.gpsMsgs, { st = st, pos = { x, y, z, dist } })
+        table.insert(drone.gpsMsgs, 1, { st = st, pos = { x, y, z, dist } })
         if #drone.gpsMsgs >= 4 then
+            while #drone.gpsMsgs > 4 do
+                table.remove(drone.gpsMsgs, #drone.gpsMsgs)
+            end
             local sts = {}
-            for _, el in ipairs(drone.gpsMsgs) do
-                table.insert(sts, el.pos)
+            for i = 1, 4 do
+                table.insert(sts, drone.gpsMsgs[i].pos)
             end
             local success, result = pcall(calcPoint, sts)
             if success then

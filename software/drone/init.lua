@@ -205,7 +205,9 @@ local function main()
         end
 
         local ts = computer.uptime()
-        if not drone.moving and ts > drone.gpsUpdatedAt + 3 and ts > lastGpsPing + 3 then
+        if not drone.moving and
+            (not drone.gpsUpdatedAt or ts > drone.gpsUpdatedAt + 3) and (not lastGpsPing or ts > lastGpsPing + 3) then
+            print('pinging gps')
             modem.broadcast(gpsPort, 'PING')
             lastGpsPing = ts
         end

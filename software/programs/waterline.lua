@@ -131,7 +131,9 @@ while true do
     ---if next craft is queued, calculate time for current craft to finish and then sleep 1 second longer than that before checking to 
     ---see if next craft has started.
     else
-        local timeleft = 120-((waterline[active].getWorkProgress()/waterline[active].getMaxWorkProgress())*120)
+        if active ~= 0 then
+            local timeleft = 120-((waterline[active].getWorkProgress()/waterline[active].getMaxWorkProgress())*120)
+        end
         os.sleep(timeleft+1)
         if waterline[nextactive].isMachineActive() then
             print("Making Tier "..nextactive.." water.")

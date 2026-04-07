@@ -1,6 +1,6 @@
 local droneControl = require('.software.apis.droneControl')
 
-local arg = ...
+local arg = { ... }
 
 local function showUsage()
     print('Control drones')
@@ -18,6 +18,7 @@ elseif arg[1] == 'log' then
 elseif arg[1] == 'flash' then
     if not arg[2] then
         showUsage()
+        return
     end
     droneControl.flash(arg[2], arg[3])
 elseif arg[1] == 'flash' then

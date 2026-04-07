@@ -87,7 +87,7 @@ end
 function droneControl.flash(droneAddr, path)
     if not path then
         path = droneAddr
-        path = nil
+        droneAddr = nil
     end
     local file = io.open(path, 'r')
     if not file then

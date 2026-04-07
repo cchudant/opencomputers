@@ -134,6 +134,8 @@ while true do
         if active ~= 0 then
             local timeleft = 120-((waterline[active].getWorkProgress()/waterline[active].getMaxWorkProgress())*120)
             os.sleep(timeleft+1)
+        else
+            os.sleep(120)
         end
         
         if waterline[nextactive].isMachineActive() then

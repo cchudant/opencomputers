@@ -21,7 +21,7 @@ elseif arg[1] == 'flash' then
         return
     end
     droneControl.flash(arg[2], arg[3])
-elseif arg[1] == 'flash' then
+elseif arg[1] == 'start' then
     droneControl.start(arg[2])
 else
     showUsage()

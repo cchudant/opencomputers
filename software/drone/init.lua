@@ -115,9 +115,11 @@ local function calcPoint(s)
             m = 1
         end
     end
-    print('d')
+    print('d', table.unpack(v))
+    print('d', table.unpack(Mi))
     local v2 = {}
     for i = 1, 9, 3 do
+        print('d2', i, Mi[i], Mi[i + 1], Mi[i + 2])
         table.insert(v2, v[1] * Mi[i] + v[2] * Mi[i + 1] + v[3] * Mi[i + 2])
     end
     print('e')

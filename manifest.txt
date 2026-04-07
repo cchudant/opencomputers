@@ -9,3 +9,4 @@ software/programs/gps.lua
 software/startup.lua
 software/install.lua
 software/drone/compiled
+software/drone/test.lua

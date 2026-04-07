@@ -4,8 +4,7 @@ software/apis/droneControl.lua
 software/programs/update.lua
 software/programs/makeFloppy.lua
 software/programs/installSoftware.lua
-software/programs/flashEeprom.lua
-software/programs/logDrones.lua
+software/programs/drone.lua
 software/programs/gps.lua
 software/startup.lua
 software/install.lua

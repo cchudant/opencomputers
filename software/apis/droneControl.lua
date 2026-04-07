@@ -38,7 +38,7 @@ local flashPort = 20
 
 local droneControl = {}
 
-function droneControl.flashEeprom()
+function droneControl.makeEeprom()
     local file = io.open('/software/drone/compiled', 'r') --[[@as file*]]
     local buffer = file:read('a')
     file:close()
@@ -79,6 +79,34 @@ function droneControl.logDrones()
             writeWithColor(shortAddr, color)
             writeWithColor(": " .. ev[7] .. "\n", gray)
         end
+    end
+end
+
+---@overload fun(droneAddr: string, path: string) flash a specific drone
+---@overload fun(path: string) flash to every drone in range
+function droneControl.flash(droneAddr, path)
+    if not path then path = droneAddr end
+    local file = io.open(path, 'r')
+    if not file then
+        error('File not found: "' .. path .. '"')
+    end
+    local content = file:read('a')
+    file:close()
+    if droneAddr then
+        modem.send(droneAddr, flashPort, 'flash', content)
+    else
+        modem.broadcast(flashPort, 'flash', content)
+    end
+    print('Flashed.')
+end
+
+---@overload fun(droneAddr: string) flash a specific drone
+---@overload fun() flash to every drone in range
+function droneControl.start(droneAddr)
+    if droneAddr then
+        modem.send(droneAddr, flashPort, 'start')
+    else
+        modem.broadcast(flashPort, 'start')
     end
 end
 

@@ -52,6 +52,6 @@ if not mountPoint then
     return
 end
 
-filesystem.copy('/software/install.lua', mountPoint .. '/autorun.lua')
+filesystem.copy('/software/install.lua', mountPoint .. '/install.lua')
 
 print('Installed to ' .. fsAddr)

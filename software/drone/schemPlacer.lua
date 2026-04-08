@@ -186,6 +186,7 @@ for dx = 0, xlen do
                             print('Could not place', err)
                         end
                         placed = true
+                        break
                     end
                 end
             end

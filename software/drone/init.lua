@@ -167,9 +167,9 @@ end
 computer.beep(1000, 0.5)
 modem.broadcast(port, 'started')
 
-local lastGpsPing = computer.uptime()
 
 local function main()
+    local lastGpsPing
     local timeout = 5
     while true do
         if isErr then
@@ -182,9 +182,12 @@ local function main()
         if not drone.moving and
             (not drone.gpsUpdatedAt or ts > drone.gpsUpdatedAt + 30) and (not lastGpsPing or ts > lastGpsPing + 5) then
             modem.broadcast(gpsPort, 'PING')
+            print('pinged')
             lastGpsPing = ts
+            timeout = math.min(timeout, 3)
         end
 
+        print('pull signal', timeout)
         local s = { computer.pullSignal(timeout) }
         timeout = 5
 
@@ -196,6 +199,7 @@ local function main()
             drone.setLightColor(0x00ff00) -- Green: running
 
             local ok, t = coroutine.resume(usr, table.unpack(s))
+            print("Coro returned", ok, t)
             if not ok then
                 print('Routine error', t)
                 computer.beep(500, 0.5)

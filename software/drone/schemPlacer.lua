@@ -11,8 +11,26 @@ while computer.energy() < computer.maxEnergy() * 0.95 do
     drone.sleep(1)
 end
 
+local sides = {
+    negy = 0,
+    posy = 1,
+    negz = 2,
+    posz = 3,
+    negx = 4,
+    posx = 5,
+}
+
 drone.stillOffsetAllowed = .4
 drone.stillVelocityAllowed = .1
+
+for i = 1, drone.tankCount() do
+    local level = drone.tankLevel(i)
+    print('tank ' .. i .. ' has level' .. level)
+    if level > 0 then
+        drone.selectTank(i)
+        drone.fill(sides.negy, level)
+    end
+end
 
 local args = ...
 local function unserialize(data)
@@ -36,15 +54,6 @@ local home = drone.position
 local mall = { home[1] - 3, home[2], home[3] }
 local safepoint1 = { home[1] - 30, home[2], home[3] }
 local safepoint2 = { home[1] - 30, home[2] - 30, home[3] }
-
-local sides = {
-    negy = 0,
-    posy = 1,
-    negz = 2,
-    posz = 3,
-    negx = 4,
-    posx = 5,
-}
 
 local function moveToBlock(x, y, z)
     if type(x) == 'table' then x, y, z = table.unpack(x) end
@@ -140,6 +149,7 @@ for _ = 1, 3 do
                 -- find empty/tank with same fluid
                 for tankI, status in ipairs(tankStatus) do
                     if needed <= 0 then break end
+                    print('needed', needed)
                     if not status.liquid or status.liquid == liquidName then
                         drone.selectTank(tankI)
                         local taken = math.min(drone.tankSpace(tankI), needed * 1000)
@@ -182,10 +192,10 @@ for dx = 0, xlen - 1 do
                 placed = true
             elseif liquids[block] then
                 -- find liquid to place
-                for tankI, status in tankStatus do
+                for tankI, status in ipairs(tankStatus) do
                     if status.liquid == liquids[block] and status.count > 0 then
                         drone.selectTank(tankI)
-                        drone.fill(sides.negz, 1000)
+                        drone.fill(sides.negy, 1000)
                         status.count = status.count - 1000
                         placed = true
                         break

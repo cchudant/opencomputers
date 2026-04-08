@@ -35,7 +35,6 @@ function computer.pullSignal(timeout)
     local deadline = computer.uptime() +
         (type(timeout) == "number" and timeout or math.huge)
     repeat
-        print('yielding')
         local signal = table.pack(coroutine.yield(deadline - computer.uptime()))
         if signal.n > 0 then
             return table.unpack(signal, 1, signal.n)
@@ -136,7 +135,6 @@ local function handleModem(s)
     elseif s[6] == 'run' and not usr then
         code = s[7]
         usr = coroutine.create(function() return userRoutine(table.unpack(s, 8)) end)
-        print('User code started.')
     elseif s[6] == 'GPS' then
         local _, _, st, _, dist, _, x, y, z = table.unpack(s)
         if drone.moving then
@@ -164,7 +162,6 @@ local function handleModem(s)
             if ok then
                 drone.position = { r[1] + .5, r[2] + .5, r[3] + .5 }
                 drone.gpsUpdatedAt = computer.uptime()
-                print('GPS position: ', table.unpack(drone.position))
             else
                 print('GPS Error: ', r)
             end
@@ -195,12 +192,10 @@ local function main()
         if not drone.moving and
             (not drone.gpsUpdatedAt or ts > drone.gpsUpdatedAt + 30) and (not lastGpsPing or ts > lastGpsPing + 5) then
             modem.broadcast(gpsPort, 'PING')
-            print('pinged')
             lastGpsPing = ts
             timeout = math.min(timeout, 3)
         end
 
-        print('pull signal??', timeout)
         local s = { rawpull(timeout) }
         timeout = 5
 
@@ -208,11 +203,9 @@ local function main()
             handleModem(s)
         end
         if usr then
-            print("Resuming coro")
             drone.setLightColor(0x00ff00) -- Green: running
 
             local ok, t = coroutine.resume(usr, table.unpack(s))
-            print("Coro returned", ok, t)
             if not ok then
                 print('Routine error', t)
                 computer.beep(500, 0.5)

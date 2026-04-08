@@ -76,7 +76,10 @@ while true do
     for el in inventory_controller.getAllStacks(sides.posz) do
         local elId = itemDetailToMat(el)
         local needed = (matlist[elId] or 0) - (got[elId] or 0)
-        if not elId then break end
+
+        if elId then
+            print('Slot??', mallSlot, elId, needed)
+        end
 
         if elId and needed > 0 then
             local sucked = inventory_controller.suckFromSlot(sides.posz, mallSlot, math.min(needed, 64))

@@ -73,7 +73,7 @@ local code = ""
 local usr = nil
 local function userRoutine(...)
     isErr = false
-    local f, e = load(code, 'droneScript.lua')
+    local f, e = load(code, '=droneScript.lua')
     if not f then error(e) end
     f(...)
     usr = nil

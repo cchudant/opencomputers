@@ -13,9 +13,6 @@ end
 
 local x, y, z, xlen, _, zlen, blocks, matlist = table.unpack(unserialize(args) --[[@as table]])
 
-blocks = unserialize(blocks) --[[@as table]]
-matlist = unserialize(matlist) --[[@as table]]
-
 local home = drone.position
 local mall = { home[1] - 3, home[2], home[3] }
 local safepoint1 = { home[1] - 30, home[2], home[3] }

@@ -1,11 +1,7 @@
 local io = require('io')
 local component = require('component')
 local event = require('event')
-local util = require('.software.apis.util')
 local term = require('term')
-
-local modem = component.modem
-local eeprom = component.eeprom
 
 local goodColors = {
     0xe6194B,
@@ -49,6 +45,7 @@ function droneControl.makeEeprom()
 
     -- print('Size after minification: ' .. buffer:len() .. ' bytes')
 
+    local eeprom = component.eeprom
     if not eeprom then
         print('No eeprom found.')
     else
@@ -63,6 +60,7 @@ function droneControl.logDrones()
     if term.gpu then
         term.gpu().setResolution(term.gpu().maxResolution())
     end
+    local modem = component.modem
     modem.open(dronePort)
     modem.broadcast(dronePort, 'echo')
     print('Listening.')

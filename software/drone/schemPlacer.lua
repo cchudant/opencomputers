@@ -1,6 +1,12 @@
 while not drone.gpsUpdatedAt do
-    drone.setLightColor(0xffffff)
+    drone.setLightColor(0xFFFFFF)
     drone.setStatusText('GPS...')
+    drone.sleep(1)
+end
+
+while computer.energy() < computer.maxEnergy() * 0.95 do
+    drone.setLightColor(0xFFA500)
+    drone.setStatusText('CHARGE')
     drone.sleep(1)
 end
 

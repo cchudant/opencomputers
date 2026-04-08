@@ -201,7 +201,7 @@ local function main()
         end
 
         print('pull signal', timeout)
-        local s = { computer.rawpull(timeout) }
+        local s = { rawpull(timeout) }
         timeout = 5
 
         if s[1] == "modem_message" then

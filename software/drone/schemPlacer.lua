@@ -11,7 +11,7 @@ while computer.energy() < computer.maxEnergy() * 0.95 do
     drone.sleep(1)
 end
 
-drone.stillOffsetAllowed = .3
+drone.stillOffsetAllowed = .4
 drone.stillVelocityAllowed = .1
 
 local args = ...
@@ -124,14 +124,17 @@ for _ = 1, drone.tankCount() do
     table.insert(tankStatus, { liquid = nil, count = 0 })
 end
 
-drone.moveRel(-3, 0, 0)
+drone.moveRel(-2, 0, 0)
 
 for _ = 1, 3 do
     drone.moveRel(-1, 0, 0)
+    print('baa')
 
     local el = tank_controller.getFluidInTank(sides.posz)
     if #el > 0 then
+        local el = el[1]
         for mat, liquidName in pairs(liquids) do
+            print(mat, liquidName, el.name)
             if liquidName == el.name then
                 local needed = (matlist[mat] or 0) - (got[mat] or 0)
                 -- find empty/tank with same fluid
@@ -140,6 +143,7 @@ for _ = 1, 3 do
                     if not status.liquid or status.liquid == liquidName then
                         drone.selectTank(tankI)
                         local taken = math.min(drone.tankSpace(tankI), needed * 1000)
+                        print('drain', tankI, taken)
                         drone.drain(sides.posz, taken)
                         needed = needed - taken
                         status.liquid = liquidName
@@ -155,10 +159,14 @@ for tankI, status in ipairs(tankStatus) do
     print('Tank status: ', tankI, status.liquid, status.count)
 end
 
+local accel = drone.getAcceleration()
+drone.setAcceleration(999)
 drone.moveTo(safepoint1)
 drone.moveTo(safepoint2)
+drone.setAcceleration(accel)
 
 moveToBlock(x, y + 16, z)
+
 local j = 1
 for dx = 0, xlen - 1 do
     for dz = 0, zlen - 1 do
@@ -166,9 +174,13 @@ for dx = 0, xlen - 1 do
 
         if block ~= '0' then
             moveToBlock(x + dx, y + 1, z + dz)
+
             local placed = false
 
-            if liquids[block] then
+            if drone.detect(sides.negy) then
+                print('something already there?')
+                placed = true
+            elseif liquids[block] then
                 -- find liquid to place
                 for tankI, status in tankStatus do
                     if status.liquid == liquids[block] and status.count > 0 then
@@ -203,6 +215,8 @@ for dx = 0, xlen - 1 do
 end
 
 moveToBlock(x, y + 16, z)
+drone.setAcceleration(999)
 drone.moveTo(safepoint2)
 drone.moveTo(safepoint1)
+drone.setAcceleration(accel)
 drone.moveTo(home)

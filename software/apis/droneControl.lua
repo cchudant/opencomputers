@@ -34,7 +34,7 @@ end
 
 local gray = 0xa9a9a9;
 
-local flashPort = 20
+local dronePort = 20
 
 local droneControl = {}
 
@@ -63,18 +63,22 @@ function droneControl.logDrones()
     if term.gpu then
         term.gpu().setResolution(term.gpu().maxResolution())
     end
-    modem.open(flashPort)
-    modem.broadcast(flashPort, 'echo')
+    modem.open(dronePort)
+    modem.broadcast(dronePort, 'echo')
     print('Listening.')
     while true do
         local ev = { event.pull('modem_message') }
         local addr = ev[3]
         local color = goodColors[(tonumber(string.sub(addr, -6), 16) % (#goodColors - 1) + 1)]
         local shortAddr = string.sub(addr, 1, 6)
-        if ev[6] == 'drone' then
+        if ev[6] == 'started' then
             writeWithColor("[", gray)
             writeWithColor(shortAddr, color)
-            writeWithColor(" online]\n", gray)
+            writeWithColor(" started]\n", gray)
+        elseif ev[6] == 'status' then
+            writeWithColor("[", gray)
+            writeWithColor(shortAddr, color)
+            writeWithColor(" status: " .. ev[7] .. "]\n", gray)
         elseif ev[6] == 'log' then
             writeWithColor(shortAddr, color)
             writeWithColor(": " .. ev[7] .. "\n", gray)
@@ -82,9 +86,8 @@ function droneControl.logDrones()
     end
 end
 
----@overload fun(droneAddr: string, path: string) flash a specific drone
----@overload fun(path: string) flash to every drone in range
-function droneControl.flash(droneAddr, path)
+---@overload fun(droneAddr: string|nil, path: string, ...) run a program on a drone or all drones
+function droneControl.run(droneAddr, path, ...)
     if not path then
         path = droneAddr
         droneAddr = nil
@@ -96,21 +99,11 @@ function droneControl.flash(droneAddr, path)
     local content = file:read('a')
     file:close()
     if droneAddr then
-        modem.send(droneAddr, flashPort, 'flash', content)
+        modem.send(droneAddr, dronePort, 'run', content, ...)
     else
-        modem.broadcast(flashPort, 'flash', content)
+        modem.broadcast(dronePort, 'run', content, ...)
     end
     print('Flashed.')
-end
-
----@overload fun(droneAddr: string) flash a specific drone
----@overload fun() flash to every drone in range
-function droneControl.start(droneAddr)
-    if droneAddr then
-        modem.send(droneAddr, flashPort, 'start')
-    else
-        modem.broadcast(flashPort, 'start')
-    end
 end
 
 return droneControl

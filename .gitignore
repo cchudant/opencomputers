@@ -1,0 +1,4 @@
+*.data
+*.nbt
+*.schematic
+.DS_Store

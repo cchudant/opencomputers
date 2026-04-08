@@ -2,12 +2,15 @@ software/apis/control.lua
 software/apis/util.lua
 software/apis/droneControl.lua
 software/apis/gps.lua
+software/apis/schematic.lua
 software/programs/update.lua
 software/programs/makeFloppy.lua
 software/programs/installSoftware.lua
 software/programs/drone.lua
 software/programs/gps.lua
+software/programs/reclamationMaster.lua
 software/startup.lua
 software/install.lua
 software/drone/compiled
 software/drone/test.lua
+software/drone/schemPlacer.lua

@@ -1,28 +1,45 @@
 local droneControl = require('.software.apis.droneControl')
+local shell = require('shell')
 
-local arg = { ... }
+local args, ops = shell.parse(...)
 
 local function showUsage()
     print('Control drones')
     print('Usage:')
     print('* drone eeprom - flash the eprom image to the current eeprom')
     print('* drone log - listen to drone events, log their outpout')
-    print('* drone flash [droneAddr] <dronescript path> - flash a drone with a new script')
-    print('* drone start [droneAddr] - start a drone')
+    print('* drone run <dronescript path> [args...] - run all waiting drone with a script')
+    print('* drone run --addr <droneAddr> <dronescript path> [args...] - run a drone with a script')
 end
 
-if arg[1] == 'eeprom' then
-    droneControl.makeEeprom()
-elseif arg[1] == 'log' then
-    droneControl.logDrones()
-elseif arg[1] == 'flash' then
-    if not arg[2] then
+if ops[1] == 'eeprom' and #args == 1 then
+    for k, _v in pairs(ops) do
+        print('Unknown option: --' .. k)
         showUsage()
         return
     end
-    droneControl.flash(arg[2], arg[3])
-elseif arg[1] == 'start' then
-    droneControl.start(arg[2])
+
+    droneControl.makeEeprom()
+elseif ops[1] == 'log' and #args == 1 then
+    for k, _v in pairs(ops) do
+        print('Unknown option: --' .. k)
+        showUsage()
+        return
+    end
+
+    droneControl.logDrones()
+elseif ops[1] == 'run' and #args >= 2 then
+
+    local droneAddr = ops['addr']
+    ops['addr'] = nil
+
+    for k, _v in pairs(ops) do
+        print('Unknown option: --' .. k)
+        showUsage()
+        return
+    end
+
+    droneControl.run(droneAddr, ops[3], table.unpack(ops[4]))
 else
     showUsage()
 end

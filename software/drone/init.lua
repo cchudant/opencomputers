@@ -71,11 +71,11 @@ end
 
 local code = ""
 local usr = nil
-local function userRoutine()
+local function userRoutine(...)
     isErr = false
-    local f, e = load(code)
+    local f, e = load(code, 'droneScript.lua')
     if not f then error(e) end
-    f()
+    f(...)
     usr = nil
 end
 
@@ -117,15 +117,14 @@ local function calcPoint(s)
 end
 local function handleModem(s)
     if s[6] == 'echo' then
-        modem.send(s[3], port, "drone")
-    elseif s[6] == 'flash' then
+        local status = 'idle'
+        if usr then status = 'running' end
+        modem.send(s[3], port, 'status', status)
+    elseif s[6] == 'run' and not usr then
         code = s[7]
-        computer.beep(1000, 1)
-        usr = nil
-        isErr = false
-    elseif s[6] == 'start' then
-        usr = coroutine.create(userRoutine)
-    elseif s[6] == "GPS" then
+        usr = coroutine.create(function() return userRoutine(table.unpack(s, 8)) end)
+        print('User code started.')
+    elseif s[6] == 'GPS' then
         local _, _, st, _, dist, _, x, y, z = table.unpack(s)
         if drone.moving then
             return
@@ -166,7 +165,7 @@ if modem ~= nil then
 end
 
 computer.beep(1000, 1)
-modem.broadcast(port, "drone")
+modem.broadcast(port, 'started')
 
 local lastGpsPing = computer.uptime()
 

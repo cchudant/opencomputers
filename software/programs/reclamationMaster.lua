@@ -40,4 +40,6 @@ droneControl.run(
     serialization.serialize(droneArgs)
 )
 
+print('Sent.')
+
 schem:close()

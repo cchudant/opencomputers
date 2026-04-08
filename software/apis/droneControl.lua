@@ -99,7 +99,6 @@ function droneControl.run(droneAddr, path, ...)
     else
         modem.broadcast(dronePort, 'run', content, ...)
     end
-    print('Flashed.')
 end
 
 return droneControl

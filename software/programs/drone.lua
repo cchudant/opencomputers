@@ -29,7 +29,6 @@ elseif args[1] == 'log' and #args == 1 then
 
     droneControl.logDrones()
 elseif args[1] == 'run' and #args >= 2 then
-
     local droneAddr = ops['addr']
     ops['addr'] = nil
 
@@ -40,6 +39,7 @@ elseif args[1] == 'run' and #args >= 2 then
     end
 
     droneControl.run(droneAddr, ops[3], table.unpack(ops[4]))
+    print('Sent.')
 else
     showUsage()
 end

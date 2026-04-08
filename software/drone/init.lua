@@ -30,6 +30,19 @@ drone.gpsMsgs = {}
 
 ---@alias drone.Position [number, number, number]
 
+local rawpull = computer.pullSignal
+function computer.pullSignal(timeout)
+    local deadline = computer.uptime() +
+        (type(timeout) == "number" and timeout or math.huge)
+    repeat
+        print('yielding')
+        local signal = table.pack(coroutine.yield(deadline - computer.uptime()))
+        if signal.n > 0 then
+            return table.unpack(signal, 1, signal.n)
+        end
+    until computer.uptime() >= deadline
+end
+
 ---@param timeout number?
 function drone.sleep(timeout)
     computer.pullSignal(timeout)
@@ -188,7 +201,7 @@ local function main()
         end
 
         print('pull signal', timeout)
-        local s = { computer.pullSignal(timeout) }
+        local s = { computer.rawpull(timeout) }
         timeout = 5
 
         if s[1] == "modem_message" then

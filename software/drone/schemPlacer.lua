@@ -59,7 +59,7 @@ while true do
         if not liquids[k] and (got[k] or 0) < v then
             gotAll = false
             if i > 5 then
-                print('Missing:' .. k)
+                print('Missing: ' .. k)
                 drone.sleep(10)
             end
             break
@@ -72,20 +72,21 @@ while true do
 
     for el in inventory_controller.getAllStacks(sides.posz) do
         local elId = itemDetailToMat(el)
-        local mat = matlist[elId]
         local needed = (matlist[elId] or 0) - (got[elId] or 0)
+        print('Checking', elId, needed)
 
-        if needed > 0 and inventory_controller.suckFromSlot(sides.posz, math.min(needed, 64)) then
+        if elId and needed > 0 and inventory_controller.suckFromSlot(sides.posz, math.min(needed, 64)) then
             -- we don't know how many we sucked, recompute it.
 
             local count = 0
             for invi = 1, drone.inventorySize() do
                 local item = inventory_controller.getStackInInternalSlot(invi)
-                if itemDetailToMat(item) == mat then
+                if itemDetailToMat(item) == elId then
                     count = count + item.size
                 end
             end
-            got[mat] = count
+            print('Got', elId, count)
+            got[elId] = count
         end
     end
 

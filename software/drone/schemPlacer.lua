@@ -30,6 +30,7 @@ for i = 1, drone.tankCount() do
     drone.selectTank(i)
     drone.fill(sides.negy, level)
   end
+  print('tank ' .. i .. ' now has' .. drone.tankLevel(i))
 end
 
 local args = ...

@@ -11,6 +11,9 @@ while computer.energy() < computer.maxEnergy() * 0.95 do
     drone.sleep(1)
 end
 
+drone.stillOffsetAllowed = .3
+drone.stillVelocityAllowed = .1
+
 local args = ...
 local function unserialize(data)
     local result, reason = load("return " .. data, "=data", nil, { math = { huge = math.huge } })

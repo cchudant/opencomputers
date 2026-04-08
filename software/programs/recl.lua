@@ -25,6 +25,9 @@ local schem = schematic.Schematic.load('/home/reclamation4_y10.data')
 
 local schemX, schemY, schemZ = 192, 10, -880
 
+schem:nextChunk()
+schem:nextChunk()
+schem:nextChunk()
 local chunk = schem:nextChunk()
 if not chunk then error('no chunk') end
 

@@ -76,9 +76,12 @@ function drone.moveTo(x, y, z)
     drone.moveRel(x - p[1], y - p[2], z - p[3])
 end
 
+drone.stillOffsetAllowed = .05
+drone.stillVelocityAllowed = .05
+
 ---Returns true if the drone is still.
 function drone.isStill()
-    return drone.getOffset() < .05 and drone.getVelocity() < .05
+    return drone.getOffset() <= drone.stillOffsetAllowed and drone.getVelocity() <= drone.stillVelocityAllowed
 end
 
 local code = ""

@@ -1,7 +1,6 @@
 while not drone.gpsUpdatedAt do
   drone.setLightColor(0xFFFFFF)
   drone.setStatusText('GPS...')
-  print('waiting')
   drone.sleep(1)
 end
 
@@ -11,6 +10,7 @@ while computer.energy() < computer.maxEnergy() * 0.95 do
   drone.sleep(1)
 end
 
+local ic = inventory_controller
 local sides = {
   negy = 0,
   posy = 1,
@@ -19,49 +19,58 @@ local sides = {
   negx = 4,
   posx = 5,
 }
-
 drone.stillOffsetAllowed = .4
-drone.stillVelocityAllowed = .1
+drone.stillVelocityAllowed = .2
 
-for i = 1, drone.tankCount() do
-  local level = drone.tankLevel(i)
-  print('tank ' .. i .. ' has level' .. level)
-  if level > 0 then
-    drone.selectTank(i)
-    drone.fill(sides.negy, level)
+local function dump()
+  for i = 1, drone.tankCount() do
+    local level = drone.tankLevel(i)
+    print('tank ' .. i .. ' has level' .. level)
+    if level > 0 then
+      drone.selectTank(i)
+      drone.fill(sides.negy, level)
+    end
+    print('tank ' .. i .. ' now has' .. drone.tankLevel(i))
   end
-  print('tank ' .. i .. ' now has' .. drone.tankLevel(i))
+  for invi = 1, drone.inventorySize() do
+    if drone.count(invi) then
+      drone.select(invi)
+      drone.drop(sides.negy, 64)
+    end
+  end
+  drone.select(1)
 end
+dump()
 
 local args = ...
-local function unserialize(data)
-  local result, reason = load("return " .. data, "=data", nil, { math = { huge = math.huge } })
-  if not result then
-    return nil, reason
+local function unser(data)
+  local rs, re = load("return " .. data, "=data", nil, {})
+  if not rs then
+    return nil, re
   end
-  local ok, output = pcall(result)
+  local ok, o = pcall(rs)
   if not ok then
-    return nil, output
+    return nil, o
   end
-  return output
+  return o
 end
 
-local x, y, z, xlen, _, zlen, blocks, matlist = table.unpack(unserialize(args) --[[@as table]])
+local x, y, z, xlen, _, zlen, blocks, mlist = table.unpack(unser(args) --[[@as table]])
 
 drone.setLightColor(0x00FF00)
 drone.setStatusText(string.format('%s,%s,%s', x, y, z))
 
 local home = drone.position
 local mall = { home[1] - 3, home[2], home[3] }
-local safepoint1 = { home[1] - 30, home[2], home[3] }
-local safepoint2 = { home[1] - 30, home[2] - 30, home[3] }
+local safe1 = { home[1] - 30, home[2], home[3] }
+local safe2 = { home[1] - 30, home[2] - 30, home[3] }
 
 local function moveToBlock(x, y, z)
   if type(x) == 'table' then x, y, z = table.unpack(x) end
   drone.moveTo(x + .5, y + .5, z + .5)
 end
 
-local function itemDetailToMat(el)
+local function detToMat(el)
   if not el then return nil end
   if not el.damage or el.damage == 0 then
     return tostring(el.id)
@@ -69,23 +78,23 @@ local function itemDetailToMat(el)
   return el.id .. ':' .. el.damage
 end
 
-local liquids = {
+local lqds = {
   ['2055:10'] = "poison",
   ['2055:11'] = "water",
   ['2055:14'] = "lava",
 }
 
 local got = {}
-local i = 1
 
 -- Get items.
 
 drone.moveTo(mall)
 
+local i = 1
 while true do
   local gotAll = true
-  for k, v in pairs(matlist) do
-    if not liquids[k] and (got[k] or 0) < v then
+  for k, v in pairs(mlist) do
+    if not lqds[k] and (got[k] or 0) < v then
       gotAll = false
       if i > 5 then
         print('Missing: ' .. k)
@@ -95,29 +104,28 @@ while true do
     end
   end
   if gotAll then
-    print('Got everything from mall!')
     break
   elseif i > 5 then
     drone.sleep(5)
   end
 
   local mallSlot = 1
-  for el in inventory_controller.getAllStacks(sides.posz) do
-    local elId = itemDetailToMat(el)
-    local needed = (matlist[elId] or 0) - (got[elId] or 0)
+  for el in ic.getAllStacks(sides.posz) do
+    local elId = detToMat(el)
+    local needed = (mlist[elId] or 0) - (got[elId] or 0)
 
     if elId and needed > 0 then
-      local sucked = inventory_controller.suckFromSlot(sides.posz, mallSlot, math.min(needed, 64, el.size))
+      local sucked = ic.suckFromSlot(sides.posz, mallSlot, math.min(needed, 64, el.size))
       if sucked then
         -- we don't know how many we sucked, recompute it. (necessary for inter-drone race conditions)
-        local count = 0
+        local cnt = 0
         for invi = 1, drone.inventorySize() do
-          local item = inventory_controller.getStackInInternalSlot(invi)
-          if itemDetailToMat(item) == elId then
-            count = count + item.size
+          local item = ic.getStackInInternalSlot(invi)
+          if detToMat(item) == elId then
+            cnt = cnt + item.size
           end
         end
-        got[elId] = count
+        got[elId] = cnt
       end
     end
 
@@ -127,38 +135,35 @@ while true do
   i = i + 1
 end
 
--- Liquids
-
-local tankStatus = {}
+local tSts = {}
 for _ = 1, drone.tankCount() do
-  table.insert(tankStatus, { liquid = nil, count = 0 })
+  table.insert(tSts, { lqd = nil, cnt = 0 })
 end
 
 drone.moveRel(-2, 0, 0)
 
 for _ = 1, 3 do
   drone.moveRel(-1, 0, 0)
-  print('baa')
 
   local el = tank_controller.getFluidInTank(sides.posz)
   if #el > 0 then
     local el = el[1]
-    for mat, liquidName in pairs(liquids) do
-      print(mat, liquidName, el.name)
-      if liquidName == el.name then
-        local needed = (matlist[mat] or 0) - (got[mat] or 0)
+    for mat, lqdN in pairs(lqds) do
+      print(mat, lqdN, el.name)
+      if lqdN == el.name then
+        local need = (mlist[mat] or 0) - (got[mat] or 0)
         -- find empty/tank with same fluid
-        for tankI, status in ipairs(tankStatus) do
-          if needed <= 0 then break end
-          print('needed', needed)
-          if not status.liquid or status.liquid == liquidName then
-            drone.selectTank(tankI)
-            local taken = math.min(drone.tankSpace(tankI), needed * 1000)
-            print('drain', tankI, taken)
-            drone.drain(sides.posz, taken)
-            needed = needed - taken
-            status.liquid = liquidName
-            status.count = status.count + taken
+        for tI, sts in ipairs(tSts) do
+          if need <= 0 then break end
+          print('needed', need)
+          if not sts.lqd or sts.lqd == lqdN then
+            drone.selectTank(tI)
+            local tkn = math.min(drone.tankSpace(tI), need * 1000)
+            print('drain', tI, tkn)
+            drone.drain(sides.posz, tkn)
+            need = need - tkn
+            sts.lqd = lqdN
+            sts.cnt = sts.cnt + tkn
           end
         end
       end
@@ -166,47 +171,44 @@ for _ = 1, 3 do
   end
 end
 
-for tankI, status in ipairs(tankStatus) do
-  print('Tank status: ', tankI, status.liquid, status.count)
+for tankI, status in ipairs(tSts) do
+  print('Tank status: ', tankI, status.lqd, status.cnt)
 end
 
-local accel = drone.getAcceleration()
+local acl = drone.getAcceleration()
 drone.setAcceleration(999)
-drone.moveTo(safepoint1)
-drone.moveTo(safepoint2)
-drone.setAcceleration(accel)
+drone.moveTo(safe1)
+drone.moveTo(safe2)
+drone.setAcceleration(acl)
 
 moveToBlock(x, y + 16, z)
 
 local j = 1
 for dx = 0, xlen - 1 do
   for dz = 0, zlen - 1 do
-    local block = blocks[j]
+    local b = blocks[j]
 
-    if block ~= '0' then
+    if b ~= '0' then
       moveToBlock(x + dx, y + 1, z + dz)
 
       local placed = false
 
       if drone.detect(sides.negy) then
-        print('something already there?')
         placed = true
-      elseif liquids[block] then
-        -- find liquid to place
-        for tankI, status in ipairs(tankStatus) do
-          if status.liquid == liquids[block] and status.count > 0 then
+      elseif lqds[b] then
+        for tankI, sts in ipairs(tSts) do
+          if sts.lqd == lqds[b] and sts.cnt > 0 then
             drone.selectTank(tankI)
             drone.fill(sides.negy, 1000)
-            status.count = status.count - 1000
+            sts.cnt = sts.cnt - 1000
             placed = true
             break
           end
         end
       else
-        -- find block to place
-        for invi = 1, drone.inventorySize() do
-          if itemDetailToMat(inventory_controller.getStackInInternalSlot(invi)) == block then
-            drone.select(invi)
+        for invI = 1, drone.inventorySize() do
+          if detToMat(ic.getStackInInternalSlot(invI)) == b then
+            drone.select(invI)
             local res, err = drone.place(sides.negy)
             if not res then
               print('Could not place', err)
@@ -218,7 +220,7 @@ for dx = 0, xlen - 1 do
       end
 
       if not placed then
-        print('Not placed: missing ' .. block)
+        print('Not placed: missing ' .. b)
       end
     end
     j = j + 1
@@ -227,7 +229,8 @@ end
 
 moveToBlock(x, y + 16, z)
 drone.setAcceleration(999)
-drone.moveTo(safepoint2)
-drone.moveTo(safepoint1)
-drone.setAcceleration(accel)
+drone.moveTo(safe2)
+drone.moveTo(safe1)
+drone.setAcceleration(acl)
 drone.moveTo(home)
+dump()

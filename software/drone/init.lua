@@ -200,7 +200,7 @@ local function main()
             timeout = math.min(timeout, 3)
         end
 
-        print('pull signal', timeout)
+        print('pull signal??', timeout)
         local s = { rawpull(timeout) }
         timeout = 5
 

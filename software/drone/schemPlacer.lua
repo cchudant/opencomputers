@@ -25,6 +25,9 @@ end
 
 local x, y, z, xlen, _, zlen, blocks, matlist = table.unpack(unserialize(args) --[[@as table]])
 
+drone.setLightColor(0x00FF00)
+drone.setStatusText(string.format('%s,%s,%s', x, y, z))
+
 local home = drone.position
 local mall = { home[1] - 3, home[2], home[3] }
 local safepoint1 = { home[1] - 30, home[2], home[3] }

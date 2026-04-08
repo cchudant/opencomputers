@@ -1,6 +1,9 @@
+drone.gpsUpdatedAt = nil
+drone.gpsMsgs = {}
 while not drone.gpsUpdatedAt do
     drone.setLightColor(0xFFFFFF)
     drone.setStatusText('GPS...')
+    print('waiting')
     drone.sleep(1)
 end
 

@@ -157,8 +157,8 @@ drone.moveTo(safepoint2)
 
 moveToBlock(x, y + 16, z)
 local j = 1
-for dx = 0, xlen do
-    for dz = 0, zlen do
+for dx = 0, xlen - 1 do
+    for dz = 0, zlen - 1 do
         local block = blocks[j]
 
         if block ~= '0' then

@@ -28,6 +28,7 @@ local sides = {
 }
 
 local function moveToBlock(x, y, z)
+    if type(x) == 'table' then x, y, z = table.unpack(x) end
     drone.moveTo(x + .5, y + .5, z + .5)
 end
 

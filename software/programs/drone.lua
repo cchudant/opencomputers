@@ -12,7 +12,7 @@ local function showUsage()
     print('* drone run --addr <droneAddr> <dronescript path> [args...] - run a drone with a script')
 end
 
-if ops[1] == 'eeprom' and #args == 1 then
+if args[1] == 'eeprom' and #args == 1 then
     for k, _v in pairs(ops) do
         print('Unknown option: --' .. k)
         showUsage()
@@ -20,7 +20,7 @@ if ops[1] == 'eeprom' and #args == 1 then
     end
 
     droneControl.makeEeprom()
-elseif ops[1] == 'log' and #args == 1 then
+elseif args[1] == 'log' and #args == 1 then
     for k, _v in pairs(ops) do
         print('Unknown option: --' .. k)
         showUsage()
@@ -28,7 +28,7 @@ elseif ops[1] == 'log' and #args == 1 then
     end
 
     droneControl.logDrones()
-elseif ops[1] == 'run' and #args >= 2 then
+elseif args[1] == 'run' and #args >= 2 then
 
     local droneAddr = ops['addr']
     ops['addr'] = nil

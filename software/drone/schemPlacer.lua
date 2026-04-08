@@ -34,7 +34,7 @@ end
 
 local function itemDetailToMat(el)
     if not el then return nil end
-    if el.damage == 0 then
+    if not el.damage or el.damage == 0 then
         return el.id
     end
     return el.id .. ':' .. el.damage

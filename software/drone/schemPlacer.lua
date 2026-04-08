@@ -1,3 +1,9 @@
+while not drone.gpsUpdatedAt do
+    drone.setLightColor(0xffffff)
+    drone.setStatusText('GPS...')
+    drone.sleep(1)
+end
+
 local args = ...
 local function unserialize(data)
     local result, reason = load("return " .. data, "=data", nil, { math = { huge = math.huge } })
@@ -103,7 +109,7 @@ end
 -- Liquids
 
 local tankStatus = {}
-for _ = 1, drone.tankCount do
+for _ = 1, drone.tankCount() do
     table.insert(tankStatus, { liquid = nil, count = 0 })
 end
 

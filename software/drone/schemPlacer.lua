@@ -70,25 +70,31 @@ while true do
         break
     end
 
+    local mallSlot = 1
     for el in inventory_controller.getAllStacks(sides.posz) do
         local elId = itemDetailToMat(el)
         local needed = (matlist[elId] or 0) - (got[elId] or 0)
         if not elId then break end
-        print('Checking', elId, needed)
 
-        if elId and needed > 0 and inventory_controller.suckFromSlot(sides.posz, math.min(needed, 64)) then
-            -- we don't know how many we sucked, recompute it.
-
-            local count = 0
-            for invi = 1, drone.inventorySize() do
-                local item = inventory_controller.getStackInInternalSlot(invi)
-                if itemDetailToMat(item) == elId then
-                    count = count + item.size
+        if elId and needed > 0 then
+            
+            local sucked = inventory_controller.suckFromSlot(sides.posz, mallSlot, math.min(needed, 64))
+            print('Sucked', mallSlot, math.min(needed, 64), '=>', sucked)
+            if sucked then
+                -- we don't know how many we sucked, recompute it. (necessary for inter-drone race conditions)
+                local count = 0
+                for invi = 1, drone.inventorySize() do
+                    local item = inventory_controller.getStackInInternalSlot(invi)
+                    if itemDetailToMat(item) == elId then
+                        count = count + item.size
+                    end
                 end
+                print('Got', elId, count)
+                got[elId] = count
             end
-            print('Got', elId, count)
-            got[elId] = count
         end
+
+        mallSlot = mallSlot + 1
     end
 
     i = i + 1

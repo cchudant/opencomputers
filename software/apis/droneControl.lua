@@ -92,7 +92,7 @@ function droneControl.run(droneAddr, path, ...)
     if not file then
         error('File not found: "' .. path .. '"')
     end
-    local content = file:read('a')
+    local content = file:read('a'):gsub("[ ]+", " "):gsub("[-][-][^\n]*\n", "\n")
     file:close()
     if droneAddr then
         modem.send(droneAddr, dronePort, 'run', content, ...)

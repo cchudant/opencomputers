@@ -31,12 +31,13 @@ if not chunk then error('no chunk') end
 local x, y, z, xlen, ylen, zlen, blocks, matlist = chunk.cx * 16 + schemX, schemY, chunk.cz * 16 + schemZ,
     chunk.lenx, chunk.leny, chunk.lenz, chunk.blocks, chunk.materials
 
-print('Run /software/drone/schemPlacer.lua', x, y, z, xlen, ylen, zlen, serialization.serialize(blocks),
-serialization.serialize(matlist))
+local droneArgs = { x, y, z, xlen, ylen, zlen, blocks, matlist }
+
+print('Run /software/drone/schemPlacer.lua', serialization.serialize(droneArgs))
 
 droneControl.run(
     nil, '/software/drone/schemPlacer.lua',
-    x, y, z, xlen, ylen, zlen, serialization.serialize(blocks), serialization.serialize(matlist)
+    serialization.serialize(droneArgs)
 )
 
 schem:close()

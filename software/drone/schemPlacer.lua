@@ -1,4 +1,20 @@
-local x,y,z,xlen,_,zlen,blocks,matlist = ...
+local args = ...
+local function unserialize(data)
+    local result, reason = load("return " .. data, "=data", nil, { math = { huge = math.huge } })
+    if not result then
+        return nil, reason
+    end
+    local ok, output = pcall(result)
+    if not ok then
+        return nil, output
+    end
+    return output
+end
+
+local x, y, z, xlen, _, zlen, blocks, matlist = table.unpack(unserialize(args) --[[@as table]])
+
+blocks = unserialize(blocks) --[[@as table]]
+matlist = unserialize(matlist) --[[@as table]]
 
 local home = drone.position
 local mall = { home[1] - 3, home[2], home[3] }
@@ -13,21 +29,6 @@ local sides = {
     negx = 4,
     posx = 5,
 }
-
-local function unserialize(data)
-    local result, reason = load("return " .. data, "=data", nil, {math={huge=math.huge}})
-    if not result then
-      return nil, reason
-    end
-    local ok, output = pcall(result)
-    if not ok then
-      return nil, output
-    end
-    return output
-end
-
-blocks = unserialize(blocks) --[[@as table]]
-matlist = unserialize(matlist) --[[@as table]]
 
 local function moveToBlock(x, y, z)
     drone.moveTo(x + .5, y + .5, z + .5)
@@ -55,7 +56,7 @@ moveToBlock(mall)
 
 while true do
     local gotAll = true
-    for k,v in pairs(matlist) do
+    for k, v in pairs(matlist) do
         if not liquids[k] and (got[k] or 0) < v then
             gotAll = false
             if i > 5 then
@@ -79,7 +80,7 @@ while true do
             -- we don't know how many we sucked, recompute it.
 
             local count = 0
-            for invi = 1,drone.inventorySize() do
+            for invi = 1, drone.inventorySize() do
                 local item = inventory_controller.getStackInInternalSlot(invi)
                 if itemDetailToMat(item) == mat then
                     count = count + item.size
@@ -156,7 +157,7 @@ for dx = 0, xlen do
                 end
             else
                 -- find block to place
-                for invi = 1,drone.inventorySize() do
+                for invi = 1, drone.inventorySize() do
                     if itemDetailToMat(inventory_controller.getStackInInternalSlot(invi)) == block then
                         drone.select(invi)
                         local res, err = drone.place(sides.negy)
@@ -180,4 +181,3 @@ moveToBlock(x, y + 16, z)
 moveToBlock(safepoint2)
 moveToBlock(safepoint1)
 moveToBlock(home)
-

@@ -33,6 +33,7 @@ local function moveToBlock(x, y, z)
 end
 
 local function itemDetailToMat(el)
+    if not el then return nil end
     if el.damage == 0 then
         return el.id
     end

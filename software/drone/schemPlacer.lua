@@ -60,14 +60,16 @@ while true do
             gotAll = false
             if i > 5 then
                 print('Missing: ' .. k)
-                drone.sleep(10)
+            else
+                break
             end
-            break
         end
     end
     if gotAll then
         print('Got everything from mall!')
         break
+    elseif i > 5 then
+        drone.sleep(5)
     end
 
     local mallSlot = 1
@@ -77,7 +79,6 @@ while true do
         if not elId then break end
 
         if elId and needed > 0 then
-            
             local sucked = inventory_controller.suckFromSlot(sides.posz, mallSlot, math.min(needed, 64))
             print('Sucked', mallSlot, math.min(needed, 64), '=>', sucked)
             if sucked then

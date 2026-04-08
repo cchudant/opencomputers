@@ -87,6 +87,7 @@ end
 ---@overload fun(droneAddr: string|nil, path: string, ...) run a program on a drone or all drones
 function droneControl.run(droneAddr, path, ...)
     local file = io.open(path, 'r')
+
     local modem = component.modem
     if not file then
         error('File not found: "' .. path .. '"')

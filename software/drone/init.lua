@@ -164,7 +164,7 @@ if modem ~= nil then
     modem.open(gpsPort)
 end
 
-computer.beep(1000, 1)
+computer.beep(1000, 0.5)
 modem.broadcast(port, 'started')
 
 local lastGpsPing = computer.uptime()
@@ -198,6 +198,7 @@ local function main()
             local ok, t = coroutine.resume(usr, table.unpack(s))
             if not ok then
                 print('Routine error', t)
+                computer.beep(500, 0.5)
                 drone.setStatusText(tostring(t))
                 isErr = true
                 usr = nil
@@ -213,5 +214,6 @@ if not ok then
     print(e)
     drone.setStatusText(tostring(e))
     drone.setLightColor(0xff0000) -- Red: error
+    computer.beep(500, 0.5)
     drone.sleep(300)
 end

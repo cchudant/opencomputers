@@ -85,6 +85,7 @@ local code = ""
 local usr = nil
 local function userRoutine(...)
     isErr = false
+    drone.setLightColor(0x00ff00) -- Green: running
     local f, e = load(code, '=droneScript.lua')
     if not f then error(e) end
     f(...)
@@ -184,7 +185,7 @@ local function main()
     while true do
         if isErr then
             drone.setLightColor(0xff0000) -- Red: error
-        else
+        elseif not usr then
             drone.setLightColor(0xffff00) -- Yellow: waiting
         end
 
@@ -203,8 +204,6 @@ local function main()
             handleModem(s)
         end
         if usr then
-            drone.setLightColor(0x00ff00) -- Green: running
-
             local ok, t = coroutine.resume(usr, table.unpack(s))
             if not ok then
                 print('Routine error', t)

@@ -95,7 +95,6 @@ while true do
 
         if elId and needed > 0 then
             local sucked = inventory_controller.suckFromSlot(sides.posz, mallSlot, math.min(needed, 64, el.size))
-            print('Sucked', mallSlot, math.min(needed, 64, el.size), '=>', sucked)
             if sucked then
                 -- we don't know how many we sucked, recompute it. (necessary for inter-drone race conditions)
                 local count = 0
@@ -105,7 +104,6 @@ while true do
                         count = count + item.size
                     end
                 end
-                print('Got', elId, count)
                 got[elId] = count
             end
         end
@@ -154,53 +152,53 @@ for tankI, status in ipairs(tankStatus) do
     print('Tank status: ', tankI, status.liquid, status.count)
 end
 
--- drone.moveTo(safepoint1)
--- drone.moveTo(safepoint2)
+drone.moveTo(safepoint1)
+drone.moveTo(safepoint2)
 
--- moveToBlock(x, y + 16, z)
--- local i = 1
--- for dx = 0, xlen do
---     for dz = 0, zlen do
---         local block = blocks[i]
+moveToBlock(x, y + 16, z)
+local j = 1
+for dx = 0, xlen do
+    for dz = 0, zlen do
+        local block = blocks[j]
 
---         if block ~= '0' then
---             moveToBlock(x + dx, y + 1, z + dz)
---             local placed = false
+        if block ~= '0' then
+            moveToBlock(x + dx, y + 1, z + dz)
+            local placed = false
 
---             if liquids[block] then
---                 -- find liquid to place
---                 for tankI, status in tankStatus do
---                     if status.liquid == liquids[block] and status.count > 0 then
---                         drone.selectTank(tankI)
---                         drone.fill(sides.negz, 1000)
---                         status.count = status.count - 1000
---                         placed = true
---                         break
---                     end
---                 end
---             else
---                 -- find block to place
---                 for invi = 1, drone.inventorySize() do
---                     if itemDetailToMat(inventory_controller.getStackInInternalSlot(invi)) == block then
---                         drone.select(invi)
---                         local res, err = drone.place(sides.negy)
---                         if not res then
---                             print('Could not place', err)
---                         end
---                         placed = true
---                     end
---                 end
---             end
+            if liquids[block] then
+                -- find liquid to place
+                for tankI, status in tankStatus do
+                    if status.liquid == liquids[block] and status.count > 0 then
+                        drone.selectTank(tankI)
+                        drone.fill(sides.negz, 1000)
+                        status.count = status.count - 1000
+                        placed = true
+                        break
+                    end
+                end
+            else
+                -- find block to place
+                for invi = 1, drone.inventorySize() do
+                    if itemDetailToMat(inventory_controller.getStackInInternalSlot(invi)) == block then
+                        drone.select(invi)
+                        local res, err = drone.place(sides.negy)
+                        if not res then
+                            print('Could not place', err)
+                        end
+                        placed = true
+                    end
+                end
+            end
 
---             if not placed then
---                 print('Not placed: missing ' .. block)
---             end
---         end
---         i = i + 1
---     end
--- end
+            if not placed then
+                print('Not placed: missing ' .. block)
+            end
+        end
+        j = j + 1
+    end
+end
 
--- moveToBlock(x, y + 16, z)
--- drone.moveTo(safepoint2)
--- drone.moveTo(safepoint1)
--- drone.moveTo(home)
+moveToBlock(x, y + 16, z)
+drone.moveTo(safepoint2)
+drone.moveTo(safepoint1)
+drone.moveTo(home)

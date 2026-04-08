@@ -50,7 +50,7 @@ local i = 1
 
 -- Get items.
 
-moveToBlock(mall)
+drone.moveTo(mall)
 
 while true do
     local gotAll = true
@@ -129,8 +129,8 @@ for tankI, status in ipairs(tankStatus) do
     print('Tank status: ', tankI, status.liquid, status.count)
 end
 
--- moveToBlock(safepoint1)
--- moveToBlock(safepoint2)
+-- drone.moveTo(safepoint1)
+-- drone.moveTo(safepoint2)
 
 -- moveToBlock(x, y + 16, z)
 -- local i = 1
@@ -176,6 +176,6 @@ end
 -- end
 
 -- moveToBlock(x, y + 16, z)
--- moveToBlock(safepoint2)
--- moveToBlock(safepoint1)
--- moveToBlock(home)
+-- drone.moveTo(safepoint2)
+-- drone.moveTo(safepoint1)
+-- drone.moveTo(home)

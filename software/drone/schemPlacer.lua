@@ -171,7 +171,7 @@ for tankI, status in ipairs(tSts) do
 end
 
 local acl = drone.getAcceleration()
-drone.setAcceleration(999)
+drone.setAcceleration(999999)
 drone.moveTo(safe1)
 drone.moveTo(safe2)
 drone.setAcceleration(acl)
@@ -222,8 +222,7 @@ for dx = 0, xlen - 1 do
     end
 end
 
-moveToBlock(x, y + 16, z)
-drone.setAcceleration(999)
+drone.setAcceleration(999999)
 drone.moveTo(safe2)
 drone.moveTo(safe1)
 drone.setAcceleration(acl)

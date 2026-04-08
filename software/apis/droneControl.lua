@@ -88,10 +88,6 @@ end
 
 ---@overload fun(droneAddr: string|nil, path: string, ...) run a program on a drone or all drones
 function droneControl.run(droneAddr, path, ...)
-    if not path then
-        path = droneAddr
-        droneAddr = nil
-    end
     local file = io.open(path, 'r')
     if not file then
         error('File not found: "' .. path .. '"')

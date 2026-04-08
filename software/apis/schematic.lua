@@ -37,8 +37,6 @@ function schematic.Schematic.load(filename)
 
     local xlength, ylength, zlength, nMats = string.unpack('>I4>I4>I4>I1', file:read(4 * 3 + 1))
 
-    print(xlength, ylength, zlength, nMats)
-
     -- Material key to palette id
     local palette = {}
     -- Palette id to material key
@@ -46,13 +44,11 @@ function schematic.Schematic.load(filename)
 
     -- Read material list
 
-    print('Material list:')
     for matId = 0, nMats - 1 do
         local strlen = string.unpack('>I4', file:read(4))
         local matkey = file:read(strlen)
         palette[matkey] = matId
         revPalette[matId] = matkey
-        print(matkey, matId)
     end
 
     local nChunksX = math.ceil(xlength / chunksizeX)
@@ -99,9 +95,6 @@ function schematic.Schematic.load(filename)
         local empty = readNextBitmapBit()
         if not empty then nonEmptyChunks[string.format('%s,%s,%s', cx, cy, cz)] = true end
 
-        print('Chunk: ' ..
-            cx ..
-            ' ' .. cy .. ' ' .. cz .. ' with size ' .. lenx .. 'x' .. leny .. 'x' .. lenz .. ': ' .. tostring(empty))
     end
 
     forEachChunk(readChunkMap)
@@ -163,7 +156,6 @@ function schematic.Schematic:nextChunk()
     for _ = 0, lenx - 1 do
         for _ = 0, leny - 1 do
             for _ = 0, lenz - 1 do
-                print('matid = ', string.byte(chunkBuf, i))
                 local mat = self.revPalette[string.byte(chunkBuf, i)]
                 table.insert(blocks, mat)
                 materials[mat] = (materials[mat] or 0) + 1

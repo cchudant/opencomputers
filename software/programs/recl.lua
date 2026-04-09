@@ -26,13 +26,14 @@ local schem = schematic.Schematic.load('/home/reclamation4_y10.data')
 local schemX, schemY, schemZ = 192, 10, -880
 
 local done = false
+local chunk
 while not done do
-    local drones = droneControl.getWaitingDrones( --[[timeout sec]] 3)
-    local chunk = schem:nextChunk()
+    chunk = chunk or schem:nextChunk()
     if not chunk then
         done = true
         break
     end
+    local drones = droneControl.getWaitingDrones( --[[timeout sec]] 3)
     for _, droneAddr in ipairs(drones) do
         local x, y, z, xlen, ylen, zlen, blocks, matlist =
             chunk.cx * schematic.chunkSizeX + schemX,
@@ -49,11 +50,7 @@ while not done do
             serialization.serialize(droneArgs)
         )
 
-        chunk = schem:nextChunk()
-        if not chunk then
-            done = true
-            break
-        end
+        chunk = nil
     end
 end
 

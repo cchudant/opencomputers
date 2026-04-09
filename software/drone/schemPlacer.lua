@@ -144,9 +144,9 @@ drone.moveRel(-2, 0, 0)
 for _ = 1, 3 do
     drone.moveRel(-1, 0, 0)
 
-    local el = tank_controller.getFluidInTank(sides.posz)
-    if #el > 0 then
-        local el = el[1]
+    local flds = tank_controller.getFluidInTank(sides.posz)
+    if #flds > 0 then
+        local el = flds[1]
         for mat, lqdN in pairs(lqds) do
             if lqdN == el.name then
                 local need = (mlist[mat] or 0) - (got[mat] or 0)

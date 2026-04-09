@@ -93,7 +93,7 @@ local i = 1
 while true do
     local gotAll = true
     for k, v in pairs(mlist) do
-        if not lqds[k] and (got[k] or 0) < v then
+        if k ~= '0' and not lqds[k] and (got[k] or 0) < v then
             gotAll = false
             if i > 5 then
                 print('Missing: ' .. k)

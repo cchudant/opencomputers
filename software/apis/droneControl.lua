@@ -2,6 +2,7 @@ local io = require('io')
 local component = require('component')
 local event = require('event')
 local term = require('term')
+local computer = require('computer')
 
 local goodColors = {
     0xe6194B,
@@ -104,7 +105,6 @@ end
 
 ---@return string[] addresses
 function droneControl.getWaitingDrones(timeout)
-    local computer = component.computer
     local found = {}
     local deadline = computer.uptime() + timeout
     local modem = component.modem

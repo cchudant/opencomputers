@@ -33,13 +33,14 @@ local function add_eeprom()
     robot.select(15)
     robot.transferTo(2, 1)
     cr.craft(1)
+    robot.select(1)
 end
 
 --place and activate drone, then send signal for drones nearby to move to waiting area
 local function deploy()
-    robot.select(1)
     robot.place(sides.front)
     robot.use(sides.front, true)
+    os.sleep(1)
     droneControl.run(nil, '/software/drone/unmunch.lua')
 end
 

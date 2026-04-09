@@ -15,3 +15,5 @@ software/drone/compiled
 software/drone/test.lua
 software/drone/schemPlacer.lua
 software/programs/mall.lua
+software/drone/unmunch.lua
+software/programs/droneMuncher.lua

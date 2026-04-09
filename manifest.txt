@@ -14,3 +14,4 @@ software/install.lua
 software/drone/compiled
 software/drone/test.lua
 software/drone/schemPlacer.lua
+software/programs/mall.lua

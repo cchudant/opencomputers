@@ -1,4 +1,5 @@
 local droneControl = require('.software.apis.droneControl')
+local component = require('component')
 local sides = require('sides')
 local robot = require('robot')
 local inv = component.inventory_controller

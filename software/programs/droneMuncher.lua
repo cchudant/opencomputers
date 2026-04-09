@@ -33,14 +33,6 @@ local function add_eeprom()
     robot.select(15)
     robot.transferTo(2, 1)
     cr.craft(1)
-    if inv.getStackInInternalSlot(2) ~= nil then
-        robot.select(1)
-        robot.transferTo(13, 1)
-        cr.craft(1)
-        robot.transferTo(16, 1)
-        robot.select(13)
-        robot.transferTo(1)
-    end
 end
 
 --place and activate drone, then send signal for drones nearby to move to waiting area
@@ -59,10 +51,11 @@ elseif args == 'unmunch' then
     while inv.getStackInSlot(sides.down, 1) do
         if inv.getStackInInternalSlot(16) ~= nil then
             copy_eeprom()
-            os.sleep(5)
+            os.sleep(2)
             add_eeprom()
-            os.sleep(5)
+            os.sleep(2)
             deploy()
+            os.sleep(2)
         else
             print("Out of EEPROMs!")
             break

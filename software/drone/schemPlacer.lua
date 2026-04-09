@@ -167,10 +167,6 @@ for _ = 1, 3 do
     end
 end
 
-for tankI, status in ipairs(tSts) do
-    print('Tank status: ', tankI, status.lqd, status.cnt)
-end
-
 local acl = drone.getAcceleration()
 drone.setAcceleration(999999)
 drone.moveTo(safe1)

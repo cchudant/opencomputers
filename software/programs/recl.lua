@@ -27,14 +27,17 @@ local schemX, schemY, schemZ = 192, 10, -880
 
 local done = false
 while not done do
-    local drones = droneControl.getWaitingDrones(--[[timeout sec]] 3)
+    local drones = droneControl.getWaitingDrones( --[[timeout sec]] 3)
     local chunk = schem:nextChunk()
     if not chunk then
         done = true
         break
     end
     for _, droneAddr in ipairs(drones) do
-        local x, y, z, xlen, ylen, zlen, blocks, matlist = chunk.cx * 16 + schemX, schemY, chunk.cz * 16 + schemZ,
+        local x, y, z, xlen, ylen, zlen, blocks, matlist =
+            chunk.cx * schematic.chunkSizeX + schemX,
+            schemY,
+            chunk.cz * schematic.chunkSizeZ + schemZ,
             chunk.lenx, chunk.leny, chunk.lenz, chunk.blocks, chunk.materials
 
         local droneArgs = { x, y, z, xlen, ylen, zlen, blocks, matlist }

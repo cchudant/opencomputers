@@ -26,7 +26,7 @@ for _, el in ipairs(tileEntities) do
     end
 end
 
-local chunksizeX, chunksizeY, chunksizeZ = 16, 1, 16
+local chunkSizeX, chunkSizeY, chunkSizeZ = 8, 1, 16
 
 local function toUnsignedByte(b)
     if b < 0 then
@@ -38,7 +38,7 @@ end
 local palette = {}
 local materialList = {}
 
-local outFile = io.open('./tools/output.data', 'w+b') --[[@as file*]]
+local outFile = io.open('./tools/reclamation4_y10.data', 'w+b') --[[@as file*]]
 
 outFile:write(string.pack('>I4>I4>I4', xlength, ylength, zlength))
 
@@ -66,7 +66,7 @@ local function getBlock(x, y, z)
 end
 
 local function isChunkEmpty(cx, cy, cz, lenx, leny, lenz)
-    local coriginx, coriginy, coriginz = cx * chunksizeX, cy * chunksizeY, cz * chunksizeZ
+    local coriginx, coriginy, coriginz = cx * chunkSizeX, cy * chunkSizeY, cz * chunkSizeZ
 
     for rx = 0, lenx - 1 do
         for ry = 0, leny - 1 do
@@ -82,22 +82,22 @@ local function isChunkEmpty(cx, cy, cz, lenx, leny, lenz)
     return true
 end
 
-local nChunksX = math.ceil(xlength / chunksizeX)
-local nChunksY = math.ceil(ylength / chunksizeY)
-local nChunksZ = math.ceil(zlength / chunksizeZ)
+local nChunksX = math.ceil(xlength / chunkSizeX)
+local nChunksY = math.ceil(ylength / chunkSizeY)
+local nChunksZ = math.ceil(zlength / chunkSizeZ)
 
 local function forEachChunk(func)
     for cy = 0, nChunksY - 1 do
-        local leny = chunksizeY
-        if cy == nChunksY - 1 then leny = (ylength - 1) % chunksizeY + 1 end
+        local leny = chunkSizeY
+        if cy == nChunksY - 1 then leny = (ylength - 1) % chunkSizeY + 1 end
 
         for cz = 0, nChunksZ - 1 do
-            local lenz = chunksizeZ
-            if cz == nChunksZ - 1 then lenz = (zlength - 1) % chunksizeZ + 1 end
+            local lenz = chunkSizeZ
+            if cz == nChunksZ - 1 then lenz = (zlength - 1) % chunkSizeZ + 1 end
 
             for cx = 0, nChunksX - 1 do
-                local lenx = chunksizeX
-                if cx == nChunksX - 1 then lenx = (xlength - 1) % chunksizeX + 1 end
+                local lenx = chunkSizeX
+                if cx == nChunksX - 1 then lenx = (xlength - 1) % chunkSizeX + 1 end
 
                 func(cx, cy, cz, lenx, leny, lenz)
             end
@@ -108,7 +108,7 @@ end
 local function populateMatList(cx, cy, cz, lenx, leny, lenz)
     print('Chunk: ' .. cx .. ' ' .. cy .. ' ' .. cz .. ' with size ' .. lenx .. 'x' .. leny .. 'x' .. lenz)
 
-    local coriginx, coriginy, coriginz = cx * chunksizeX, cy * chunksizeY, cz * chunksizeZ
+    local coriginx, coriginy, coriginz = cx * chunkSizeX, cy * chunkSizeY, cz * chunkSizeZ
 
     for rx = 0, lenx - 1 do
         for ry = 0, leny - 1 do
@@ -197,7 +197,7 @@ local function writeOneChunk(cx, cy, cz, lenx, leny, lenz)
         return
     end
 
-    local coriginx, coriginy, coriginz = cx * chunksizeX, cy * chunksizeY, cz * chunksizeZ
+    local coriginx, coriginy, coriginz = cx * chunkSizeX, cy * chunkSizeY, cz * chunkSizeZ
 
     for rx = 0, lenx - 1 do
         for ry = 0, leny - 1 do

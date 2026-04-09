@@ -1,6 +1,10 @@
-local chunksizeX, chunksizeY, chunksizeZ = 16, 1, 16
+local chunkSizeX, chunkSizeY, chunkSizeZ = 8, 1, 16
 
-local schematic = {}
+local schematic = {
+    chunkSizeX = chunkSizeX,
+    chunkSizeY = chunkSizeY,
+    chunkSizeZ = chunkSizeZ,
+}
 
 ---@class schematic.Chunk
 ---@field cx number
@@ -51,22 +55,22 @@ function schematic.Schematic.load(filename)
         revPalette[matId] = matkey
     end
 
-    local nChunksX = math.ceil(xlength / chunksizeX)
-    local nChunksY = math.ceil(ylength / chunksizeY)
-    local nChunksZ = math.ceil(zlength / chunksizeZ)
+    local nChunksX = math.ceil(xlength / chunkSizeX)
+    local nChunksY = math.ceil(ylength / chunkSizeY)
+    local nChunksZ = math.ceil(zlength / chunkSizeZ)
 
     local function forEachChunk(func)
         for cy = 0, nChunksY - 1 do
-            local leny = chunksizeY
-            if cy == nChunksY - 1 then leny = (ylength - 1) % chunksizeY + 1 end
+            local leny = chunkSizeY
+            if cy == nChunksY - 1 then leny = (ylength - 1) % chunkSizeY + 1 end
 
             for cz = 0, nChunksZ - 1 do
-                local lenz = chunksizeZ
-                if cz == nChunksZ - 1 then lenz = (zlength - 1) % chunksizeZ + 1 end
+                local lenz = chunkSizeZ
+                if cz == nChunksZ - 1 then lenz = (zlength - 1) % chunkSizeZ + 1 end
 
                 for cx = 0, nChunksX - 1 do
-                    local lenx = chunksizeX
-                    if cx == nChunksX - 1 then lenx = (xlength - 1) % chunksizeX + 1 end
+                    local lenx = chunkSizeX
+                    if cx == nChunksX - 1 then lenx = (xlength - 1) % chunkSizeX + 1 end
 
                     func(cx, cy, cz, lenx, leny, lenz)
                 end
@@ -132,9 +136,9 @@ function schematic.Schematic:nextChunk()
 
         cx, cy, cz = self.nextChunkX, self.nextChunkY, self.nextChunkZ
 
-        lenx = cx == self.nChunksX - 1 and (self.xlength - 1) % chunksizeX + 1 or chunksizeX
-        leny = cy == self.nChunksY - 1 and (self.ylength - 1) % chunksizeY + 1 or chunksizeY
-        lenz = cz == self.nChunksZ - 1 and (self.zlength - 1) % chunksizeZ + 1 or chunksizeZ
+        lenx = cx == self.nChunksX - 1 and (self.xlength - 1) % chunkSizeX + 1 or chunkSizeX
+        leny = cy == self.nChunksY - 1 and (self.ylength - 1) % chunkSizeY + 1 or chunkSizeY
+        lenz = cz == self.nChunksZ - 1 and (self.zlength - 1) % chunkSizeZ + 1 or chunkSizeZ
 
         -- Advance for next call
         self.nextChunkX = self.nextChunkX + 1

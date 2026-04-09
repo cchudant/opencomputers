@@ -59,7 +59,9 @@ elseif args == 'unmunch' then
     while inv.getStackInSlot(sides.down, 1) do
         if inv.getStackInInternalSlot(16) ~= nil then
             copy_eeprom()
+            os.sleep(5)
             add_eeprom()
+            os.sleep(5)
             deploy()
         else
             print("Out of EEPROMs!")

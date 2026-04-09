@@ -48,7 +48,7 @@ local function deploy()
     robot.select(1)
     robot.place(sides.front)
     robot.use(sides.front, true)
-    droneControl.run("/software/drone/unmunch.lua")
+    droneControl.run(nil, '/software/drone/unmunch.lua')
 end
 
 local args = ...

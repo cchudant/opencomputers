@@ -41,6 +41,7 @@ end
 dump()
 
 local args = ...
+---@return any, any
 local function unser(data)
     local rs, re = load("return " .. data, "=data", nil, {})
     if not rs then
@@ -53,7 +54,7 @@ local function unser(data)
     return o
 end
 
-local x, y, z, xlen, _, zlen, blocks, mlist = table.unpack(unser(args) --[[@as table]])
+local x, y, z, xlen, _, zlen, blocks, mlist = table.unpack(unser(args))
 
 drone.setLightColor(0x00FF00)
 drone.setStatusText(string.format('%s,%s,%s', x, y, z))

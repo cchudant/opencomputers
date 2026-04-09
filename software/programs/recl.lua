@@ -25,24 +25,35 @@ local schem = schematic.Schematic.load('/home/reclamation4_y10.data')
 
 local schemX, schemY, schemZ = 192, 10, -880
 
--- schem:nextChunk()
--- schem:nextChunk()
-schem:nextChunk()
-local chunk = schem:nextChunk()
-if not chunk then error('no chunk') end
+local done = false
+while not done do
+    local drones = droneControl.getWaitingDrones(--[[timeout sec]] 3)
+    local chunk = schem:nextChunk()
+    if not chunk then
+        done = true
+        break
+    end
+    for _, droneAddr in ipairs(drones) do
+        local x, y, z, xlen, ylen, zlen, blocks, matlist = chunk.cx * 16 + schemX, schemY, chunk.cz * 16 + schemZ,
+            chunk.lenx, chunk.leny, chunk.lenz, chunk.blocks, chunk.materials
 
-local x, y, z, xlen, ylen, zlen, blocks, matlist = chunk.cx * 16 + schemX, schemY, chunk.cz * 16 + schemZ,
-    chunk.lenx, chunk.leny, chunk.lenz, chunk.blocks, chunk.materials
+        local droneArgs = { x, y, z, xlen, ylen, zlen, blocks, matlist }
 
-local droneArgs = { x, y, z, xlen, ylen, zlen, blocks, matlist }
+        print('Run /software/drone/schemPlacer.lua', serialization.serialize(droneArgs))
 
-print('Run /software/drone/schemPlacer.lua', serialization.serialize(droneArgs))
+        droneControl.run(
+            droneAddr, '/software/drone/schemPlacer.lua',
+            serialization.serialize(droneArgs)
+        )
 
-droneControl.run(
-    nil, '/software/drone/schemPlacer.lua',
-    serialization.serialize(droneArgs)
-)
+        chunk = schem:nextChunk()
+        if not chunk then
+            done = true
+            break
+        end
+    end
+end
 
-print('Sent.')
+print('All done.')
 
 schem:close()

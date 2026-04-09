@@ -102,4 +102,21 @@ function droneControl.run(droneAddr, path, ...)
     end
 end
 
+---@return string[] addresses
+function droneControl.getWaitingDrones(timeout)
+    local found = {}
+    local deadline = computer.uptime() + timeout
+    local modem = component.modem
+    modem.open(dronePort)
+    modem.broadcast(dronePort, 'echo')
+    repeat
+        local timeout = deadline - computer.uptime()
+        local ev = { event.pull(timeout, 'modem_message') }
+        if ev[6] == 'status' and ev[7] == 'idle' then
+            table.insert(found, ev[3])
+        end
+    until computer.uptime() > deadline
+    return found
+end
+
 return droneControl

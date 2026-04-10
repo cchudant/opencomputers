@@ -110,7 +110,11 @@ while true do
     end
 
     local mallSlot = 1
-    for el in ic.getAllStacks(sides.posz) do
+    local next = ic.getAllStacks(sides.posz)
+    while next do
+        local el = next()
+        if not el then break end
+
         local elId = detToMat(el)
         local needed = (mlist[elId] or 0) - (got[elId] or 0)
 

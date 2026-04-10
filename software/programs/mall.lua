@@ -11,6 +11,7 @@ local isregistered={}
 local databases={}
 for k,v in pairs(component.list('database')) do
     table.insert(databases, component.proxy(k))
+    table.sort(databases)
 end
 
 ---wipe all databases. called before entering main loop if run with arg 'clean'

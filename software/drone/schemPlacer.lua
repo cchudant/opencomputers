@@ -147,8 +147,6 @@ end
 drone.moveRel(-2, 0, 0)
 
 for _ = 0, 3 do
-    drone.moveRel(-1, 0, 0)
-
     local flds = tank_controller.getFluidInTank(sides.posz)
     if #flds > 0 then
         local el = flds[1]
@@ -170,6 +168,7 @@ for _ = 0, 3 do
             end
         end
     end
+    drone.moveRel(-1, 0, 0)
 end
 
 local acl = drone.getAcceleration()

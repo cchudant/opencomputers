@@ -86,7 +86,7 @@ if action == 'checkMatList' then
 
     schem:close()
 else
-    component.getPrimary('modem').setStrength(1)
+    component.getPrimary('modem').setStrength(2)
     local schem = schematic.Schematic.load(schemFilePath, substitutions)
 
     local schemX, schemY, schemZ = 192, 10, -880
@@ -111,7 +111,6 @@ else
                     droneAddr, '/software/drone/schemPlacer.lua',
                     serialization.serialize(droneArgs)
                 )
-                os.sleep(3)
                 break
             end
             print('No drone found.')

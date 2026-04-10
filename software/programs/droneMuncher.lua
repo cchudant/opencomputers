@@ -82,7 +82,7 @@ if args == 'munch' then
         os.exit(1)
     end
 
-    droneControl.run(nil, '/software/drone/unmunch.lua')
+    droneControl.run(nil, '/software/drone/munch.lua')
     print('Waiting...')
     os.sleep(10)
 

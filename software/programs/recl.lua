@@ -90,7 +90,7 @@ else
 
     local schemX, schemY, schemZ = 192, 10, -880
 
-    for chunk in schem:nextChunk() do
+    for chunk in schem:chunks() do
         while true do
             local drones = droneControl.getWaitingDrones( --[[timeout sec]] 3)
             if #drones then print('No drone found.') end

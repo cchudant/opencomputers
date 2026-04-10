@@ -84,19 +84,22 @@ if args == 'munch' then
 
     droneControl.run(nil, '/software/drone/munch.lua')
     print('Waiting...')
-    os.sleep(10)
+    os.sleep(5)
 
     inv.equip()
 
     robot.select(1)
+    local munched = 0
     while robot.use(sides.front, true) do
         robot.dropDown()
+        munched = munched + 1
     end
 
     robot.select(slotScrench)
     -- unequip
     inv.equip()
     robot.select(1)
+    print('Done! Drones munched: ' .. munched)
 elseif args == 'unmunch' then
     -- Messages only travel two blocks.
     component.getPrimary('modem').setStrength(2)

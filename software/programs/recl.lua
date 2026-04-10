@@ -105,10 +105,12 @@ else
 
                 print('Run /software/drone/schemPlacer.lua', serialization.serialize(droneArgs))
 
-                droneControl.run(
-                    droneAddr, '/software/drone/schemPlacer.lua',
-                    serialization.serialize(droneArgs)
-                )
+                print(droneAddr)
+
+                -- droneControl.run(
+                --     droneAddr, '/software/drone/schemPlacer.lua',
+                --     serialization.serialize(droneArgs)
+                -- )
                 break
             end
         end

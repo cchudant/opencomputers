@@ -103,12 +103,13 @@ else
 
                 local droneArgs = { x, y, z, xlen, ylen, zlen, blocks, matlist }
 
-                print('Run /software/drone/schemPlacer.lua', serialization.serialize(droneArgs))
+                print('Dispatch ' .. droneAddr .. ': ' .. x .. ',' .. y .. ',' .. z .. ' ' .. xlen .. 'x' .. ylen .. 'x' .. zlen)
 
                 droneControl.run(
                     droneAddr, '/software/drone/schemPlacer.lua',
                     serialization.serialize(droneArgs)
                 )
+                os.sleep(3)
                 break
             end
             print('No drone found.')

@@ -135,7 +135,7 @@ local function handleModem(s)
     if s[6] == 'echo' then
         local status = 'idle'
         if usr then status = 'running' end
-        modem.send(s[3], port, 'status', status)
+        modem.send(s[3], port, 'status', status, s[7])
     elseif s[6] == 'run' and not usr then
         code = s[7]
         usr = coroutine.create(function() return userRoutine(table.unpack(s, 8)) end)

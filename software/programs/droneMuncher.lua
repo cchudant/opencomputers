@@ -12,7 +12,7 @@ local function showUsage()
     print('droneMuncher')
     print('Usage:')
     print('* droneMuncher munch - will order every waiting drone to get munched.')
-    print('* droneMuncher unmunch - will deploy drones')
+    print('* droneMuncher unmunch [amount] - will deploy drones')
 end
 
 local slotGoodEeprom = 16
@@ -69,9 +69,9 @@ local function deploy()
     droneControl.run(nil, '/software/drone/unmunch.lua')
 end
 
-local args = ...
+local command, arg1 = ...
 
-if args == 'munch' then
+if command == 'munch' then
     -- Messages travel up to 10 blocks.
     component.getPrimary('modem').setStrength(20)
     robot.select(slotScrench)
@@ -100,13 +100,22 @@ if args == 'munch' then
     inv.equip()
     robot.select(1)
     print('Done! Drones munched: ' .. munched)
-elseif args == 'unmunch' then
+elseif command == 'unmunch' then
     -- Messages only travel two blocks.
     component.getPrimary('modem').setStrength(2)
 
+    local amount
+    if arg1 then
+        amount = tonumber(arg1)
+        if not amount then
+            showUsage()
+            return
+        end
+    end
+    
     local deployed = 0
 
-    while inv.getStackInSlot(sides.down, 1) do
+    while (not amount or amount < deployed) and inv.getStackInSlot(sides.down, 1) do
         local goodEeproms = inv.getStackInInternalSlot(slotGoodEeprom)
         if not goodEeproms or goodEeproms.name ~= eepromItemName then
             robot.select(slotGoodEeprom)

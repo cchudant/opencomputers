@@ -4,6 +4,10 @@ local event = require('event')
 local term = require('term')
 local computer = require('computer')
 
+local function newNonce()
+    return math.random(1, 10000000)
+end
+
 local goodColors = {
     0xe6194B,
     0xf58231,
@@ -63,7 +67,7 @@ function droneControl.logDrones()
     end
     local modem = component.modem
     modem.open(dronePort)
-    modem.broadcast(dronePort, 'echo')
+    modem.broadcast(dronePort, 'echo', 1)
     print('Listening.')
     while true do
         local ev = { event.pull('modem_message') }
@@ -108,13 +112,14 @@ end
 function droneControl.getWaitingDrones(timeout, n)
     local found = {}
     local deadline = computer.uptime() + timeout
+    local nonce = newNonce()
     local modem = component.modem
     modem.open(dronePort)
-    modem.broadcast(dronePort, 'echo')
+    modem.broadcast(dronePort, 'echo', nonce)
     while computer.uptime() <= deadline and not (n and #found >= n) do
         local tout = deadline - computer.uptime()
         local ev = { event.pull(tout, 'modem_message') }
-        if ev[6] == 'status' and ev[7] == 'idle' then
+        if ev[6] == 'status' and ev[7] == 'idle' and ev[8] == nonce then
             table.insert(found, ev[3])
         end
     end

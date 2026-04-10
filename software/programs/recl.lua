@@ -38,11 +38,20 @@ local lqds = {
     ['2055:10'] = "poison",
     ['2055:11'] = "water",
     ['2055:14'] = "lava",
+    ['682:1'] = "oil",
+}
+
+local substitutions = {
+    -- cave vines
+    ['2480'] = '0',
+    ['2480:1'] = '0',
+    -- etfuturem deepslate redstone ore to gt
+    ['2303'] = '2711:810'
 }
 
 if action == 'checkMatList' then
     local ic = component.getPrimary('inventory_controller')
-    local schem = schematic.Schematic.load(schemFilePath)
+    local schem = schematic.Schematic.load(schemFilePath, substitutions)
 
     local got = {}
     local function detToMat(el)
@@ -59,12 +68,12 @@ if action == 'checkMatList' then
     end
 
     local nMissing = 0
-    for k, _ in pairs(schem.palette) do
-        if not got[k] and not lqds[k] then
+    for _, mat in ipairs(schem.materials) do
+        if mat ~= '0' and not got[mat] and not lqds[mat] then
             if nMissing == 0 then
                 print('Missing:')
             end
-            print('- ' .. k)
+            print('- ' .. mat)
             nMissing = nMissing + 1
         end
     end
@@ -77,36 +86,31 @@ if action == 'checkMatList' then
 
     schem:close()
 else
-    local schem = schematic.Schematic.load(schemFilePath)
+    local schem = schematic.Schematic.load(schemFilePath, substitutions)
 
     local schemX, schemY, schemZ = 192, 10, -880
 
-    local done = false
-    local chunk
-    while not done do
-        chunk = chunk or schem:nextChunk()
-        if not chunk then
-            done = true
-            break
-        end
-        local drones = droneControl.getWaitingDrones( --[[timeout sec]] 3)
-        for _, droneAddr in ipairs(drones) do
-            local x, y, z, xlen, ylen, zlen, blocks, matlist =
-                chunk.cx * schematic.chunkSizeX + schemX,
-                schemY,
-                chunk.cz * schematic.chunkSizeZ + schemZ,
-                chunk.lenx, chunk.leny, chunk.lenz, chunk.blocks, chunk.materials
+    for chunk in schem:nextChunk() do
+        while true do
+            local drones = droneControl.getWaitingDrones( --[[timeout sec]] 3)
+            if #drones then print('No drone found.') end
+            for _, droneAddr in ipairs(drones) do
+                local x, y, z, xlen, ylen, zlen, blocks, matlist =
+                    chunk.cx * schematic.chunkSizeX + schemX,
+                    schemY,
+                    chunk.cz * schematic.chunkSizeZ + schemZ,
+                    chunk.lenx, chunk.leny, chunk.lenz, chunk.blocks, chunk.materials
 
-            local droneArgs = { x, y, z, xlen, ylen, zlen, blocks, matlist }
+                local droneArgs = { x, y, z, xlen, ylen, zlen, blocks, matlist }
 
-            print('Run /software/drone/schemPlacer.lua', serialization.serialize(droneArgs))
+                print('Run /software/drone/schemPlacer.lua', serialization.serialize(droneArgs))
 
-            droneControl.run(
-                droneAddr, '/software/drone/schemPlacer.lua',
-                serialization.serialize(droneArgs)
-            )
-
-            chunk = nil
+                droneControl.run(
+                    droneAddr, '/software/drone/schemPlacer.lua',
+                    serialization.serialize(droneArgs)
+                )
+                break
+            end
         end
     end
 

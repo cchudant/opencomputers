@@ -26,6 +26,7 @@ schematic.Chunk.__index = schematic.Chunk
 ---@field nMats number
 ---@field palette { [string]: number }
 ---@field revPalette { [number]: string }
+---@field materials string[]
 ---@field nonEmptyChunks { [string]: true }
 ---@field nChunksX number
 ---@field nChunksY number
@@ -36,8 +37,16 @@ schematic.Chunk.__index = schematic.Chunk
 schematic.Schematic = {}
 schematic.Schematic.__index = schematic.Schematic
 
-function schematic.Schematic.load(filename)
+---@param filename string
+---@param matSubstitutions { [string]: [string] }?
+function schematic.Schematic.load(filename, matSubstitutions)
     local file = io.open(filename, 'rb') --[[@as file*]]
+
+    matSubstitutions = matSubstitutions or {}
+
+    if file == nil then
+        error('File at path \'' .. filename .. '\' not found.')
+    end
 
     local xlength, ylength, zlength, nMats = string.unpack('>I4>I4>I4>I1', file:read(4 * 3 + 1))
 
@@ -52,7 +61,16 @@ function schematic.Schematic.load(filename)
         local strlen = string.unpack('>I4', file:read(4))
         local matkey = file:read(strlen)
         palette[matkey] = matId
-        revPalette[matId] = matkey
+        revPalette[matId] = matSubstitutions[matkey] or matkey
+    end
+
+    local addedMats = {}
+    local materials = {}
+    for _, key in pairs(revPalette) do
+        if not addedMats[key] then
+            table.insert(materials, key)
+            addedMats[key] = true
+        end
     end
 
     local nChunksX = math.ceil(xlength / chunkSizeX)
@@ -98,7 +116,6 @@ function schematic.Schematic.load(filename)
     local function readChunkMap(cx, cy, cz, lenx, leny, lenz)
         local empty = readNextBitmapBit()
         if not empty then nonEmptyChunks[string.format('%s,%s,%s', cx, cy, cz)] = true end
-
     end
 
     forEachChunk(readChunkMap)
@@ -111,6 +128,7 @@ function schematic.Schematic.load(filename)
         nMats = nMats,
         palette = palette,
         revPalette = revPalette,
+        materials = materials,
         nonEmptyChunks = nonEmptyChunks,
         nChunksX = nChunksX,
         nChunksY = nChunksY,

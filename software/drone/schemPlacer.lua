@@ -81,6 +81,7 @@ local lqds = {
     ['2055:10'] = "poison",
     ['2055:11'] = "water",
     ['2055:14'] = "lava",
+    ['682:1'] = "oil",
 }
 
 local got = {}

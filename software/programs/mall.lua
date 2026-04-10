@@ -113,7 +113,7 @@ local function fillinventory()
                 setexport(i)
                 export.exportIntoSlot(sides.north, i)
                 os.sleep(2)
-                while inv.getStackInSlot(sides.up, i) == nil or inv.getStackInSlot(sides.up, i).size < 64 do
+                while inv.getStackInSlot(sides.up, i) == nil do
                     export.exportIntoSlot(sides.north, i)
                     os.sleep(2)
                 end

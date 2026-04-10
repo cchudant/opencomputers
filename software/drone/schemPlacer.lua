@@ -27,13 +27,13 @@ local function dump()
         local level = drone.tankLevel(i)
         if level > 0 then
             drone.selectTank(i)
-            drone.fill(sides.negy, level)
+            drone.fill(sides.posz, level)
         end
     end
     for invi = 1, drone.inventorySize() do
         if drone.count(invi) then
             drone.select(invi)
-            drone.drop(sides.negy, 64)
+            drone.drop(sides.posz, 64)
         end
     end
     drone.select(1)

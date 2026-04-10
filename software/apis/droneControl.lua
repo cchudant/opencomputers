@@ -81,7 +81,7 @@ function droneControl.logDrones()
         elseif ev[6] == 'status' then
             writeWithColor("[", gray)
             writeWithColor(shortAddr, color)
-            writeWithColor(" status: " .. ev[7] .. "]\n", gray)
+            writeWithColor(" status: " .. ev[6] .. "]\n", gray)
         elseif ev[6] == 'log' then
             writeWithColor(shortAddr, color)
             writeWithColor(": " .. ev[7] .. "\n", gray)

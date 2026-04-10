@@ -51,10 +51,9 @@ local function add_eeprom()
     robot.transferTo(2, 1)
     os.sleep(1)
     cr.craft(1)
+    robot.select(1)
 
     if inv.getStackInInternalSlot(2) ~= nil then
-        os.sleep(1)
-        robot.select(1)
         os.sleep(1)
         robot.transferTo(slotTemp, 1)
         os.sleep(1)

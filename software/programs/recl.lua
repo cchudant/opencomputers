@@ -93,7 +93,7 @@ else
     for chunk in schem:chunks() do
         while true do
             local drones = droneControl.getWaitingDrones( --[[timeout sec]] 3)
-            if #drones then print('No drone found.') end
+            if #drones < 1 then print('No drone found.') end
             for _, droneAddr in ipairs(drones) do
                 local x, y, z, xlen, ylen, zlen, blocks, matlist =
                     chunk.cx * schematic.chunkSizeX + schemX,

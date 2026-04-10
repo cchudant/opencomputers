@@ -69,7 +69,7 @@ local function moveToBlock(x, y, z)
     drone.moveTo(x + .5, y + .5, z + .5)
 end
 
-local function detToMat(el)
+local function itemToMat(el)
     if not el then return nil end
     if not el.damage or el.damage == 0 then
         return tostring(el.id)
@@ -115,7 +115,7 @@ while true do
         local el = next()
         if not el then break end
 
-        local elId = detToMat(el)
+        local elId = itemToMat(el)
         local needed = (mlist[elId] or 0) - (got[elId] or 0)
 
         if elId and needed > 0 then
@@ -125,7 +125,7 @@ while true do
                 local cnt = 0
                 for invi = 1, drone.inventorySize() do
                     local item = ic.getStackInInternalSlot(invi)
-                    if detToMat(item) == elId then
+                    if itemToMat(item) == elId then
                         cnt = cnt + item.size
                     end
                 end
@@ -146,7 +146,7 @@ end
 
 drone.moveRel(-2, 0, 0)
 
-for _ = 1, 3 do
+for _ = 0, 3 do
     drone.moveRel(-1, 0, 0)
 
     local flds = tank_controller.getFluidInTank(sides.posz)
@@ -160,11 +160,11 @@ for _ = 1, 3 do
                     if need <= 0 then break end
                     if not sts.lqd or sts.lqd == lqdN then
                         drone.selectTank(tI)
-                        local tkn = math.min(drone.tankSpace(tI), need * 1000)
-                        drone.drain(sides.posz, tkn)
+                        local tkn = math.min(math.floor(drone.tankSpace(tI) / 1000), need)
+                        drone.drain(sides.posz, tkn * 1000)
                         need = need - tkn
                         sts.lqd = lqdN
-                        sts.cnt = sts.cnt + tkn
+                        sts.cnt = sts.cnt + tkn * 1000
                     end
                 end
             end
@@ -204,7 +204,7 @@ for dx = 0, xlen - 1 do
                 end
             else
                 for invI = 1, drone.inventorySize() do
-                    if detToMat(ic.getStackInInternalSlot(invI)) == b then
+                    if itemToMat(ic.getStackInInternalSlot(invI)) == b then
                         drone.select(invI)
                         local res, err = drone.place(sides.negy)
                         if not res then

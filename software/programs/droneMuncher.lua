@@ -15,9 +15,9 @@ local function showUsage()
     print('* droneMuncher unmunch - will deploy drones')
 end
 
-local slotGoodEeprom = 15
-local slotEmptyEeproms = 14
-local slotScrench = 13
+local slotGoodEeprom = 16
+local slotEmptyEeproms = 15
+local slotScrench = 14
 -- Temp slot outside of crafting grid.
 local slotTemp = 4
 

@@ -1,7 +1,7 @@
 drone.moveRel(-2, 0, 0)
 
 drone.gpsUpdatedAt = nil
-drone.gpsMsgs = nil
+drone.gpsMsgs = {}
 
 while not drone.gpsUpdatedAt do
     drone.setLightColor(0xFFFFFF)

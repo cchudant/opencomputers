@@ -1,1 +1,1 @@
-drone.moveRel(-4, 0, 0)
+drone.moveRel(-5, 0, 0)

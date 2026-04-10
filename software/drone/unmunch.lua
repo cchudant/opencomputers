@@ -1,4 +1,4 @@
-drone.moveRel(2, 0, 0)
+drone.moveRel(-2, 0, 0)
 
 while not drone.gpsUpdatedAt do
     drone.setLightColor(0xFFFFFF)
@@ -6,6 +6,6 @@ while not drone.gpsUpdatedAt do
     drone.sleep(1)
 end
 
-local x,y,z = 584.5, -141.5, 489.5
+local x, y, z = 584.5, 141.5, -489.5
 
-drone.moveTo(x,y,z)
+drone.moveTo(x, y, z)

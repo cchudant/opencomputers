@@ -76,7 +76,7 @@ local function deploy()
     robot.place(sides.front)
     os.sleep(1)
     robot.use(sides.front, true)
-    os.sleep(2)
+    os.sleep(5)
     droneControl.run(nil, '/software/drone/unmunch.lua')
 end
 

@@ -73,7 +73,7 @@ local args = ...
 
 if args == 'munch' then
     -- Messages travel up to 10 blocks.
-    component.getPrimary('modem').setStrength(10)
+    component.getPrimary('modem').setStrength(20)
     robot.select(slotScrench)
 
     local item = inv.getStackInInternalSlot(slotScrench)
@@ -81,6 +81,10 @@ if args == 'munch' then
         print("Please put a scrench in the selected slot. (slot " .. slotScrench .. ")")
         os.exit(1)
     end
+
+    droneControl.run(nil, '/software/drone/unmunch.lua')
+    print('Waiting...')
+    os.sleep(10)
 
     inv.equip()
 

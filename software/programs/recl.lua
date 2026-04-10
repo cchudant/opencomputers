@@ -86,6 +86,7 @@ if action == 'checkMatList' then
 
     schem:close()
 else
+    component.getPrimary('modem').setStrength(1)
     local schem = schematic.Schematic.load(schemFilePath, substitutions)
 
     local schemX, schemY, schemZ = 192, 10, -880
@@ -103,7 +104,8 @@ else
 
                 local droneArgs = { x, y, z, xlen, ylen, zlen, blocks, matlist }
 
-                print('Dispatch ' .. droneAddr .. ': ' .. x .. ',' .. y .. ',' .. z .. ' ' .. xlen .. 'x' .. ylen .. 'x' .. zlen)
+                print('Dispatch ' ..
+                droneAddr .. ': ' .. x .. ',' .. y .. ',' .. z .. ' ' .. xlen .. 'x' .. ylen .. 'x' .. zlen)
 
                 droneControl.run(
                     droneAddr, '/software/drone/schemPlacer.lua',

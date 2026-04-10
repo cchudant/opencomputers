@@ -9,9 +9,10 @@ local isregistered={}
 
 ---register table of databases. should always register in same order. if it doesn't, wipe databases
 local databases={}
-for k,v in pairs(component.list('database')) do
+local dbs = component.list('database')
+table.sort(dbs)
+for k,v in pairs(dbs) do
     table.insert(databases, component.proxy(k))
-    table.sort(databases)
 end
 
 ---wipe all databases. called before entering main loop if run with arg 'clean'

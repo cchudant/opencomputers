@@ -132,7 +132,7 @@ local function calcPoint(s)
     return v2
 end
 local function handleModem(s)
-    if s[6] == 'echo' then
+    if s[6] == 'status' then
         local status = 'idle'
         if usr then status = 'running' end
         modem.send(s[3], port, 'status', status, s[7])

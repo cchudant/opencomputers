@@ -67,7 +67,7 @@ function droneControl.logDrones()
     end
     local modem = component.modem
     modem.open(dronePort)
-    modem.broadcast(dronePort, 'echo', 1)
+    modem.broadcast(dronePort, 'status', 1)
     print('Listening.')
     while true do
         local ev = { event.pull('modem_message') }
@@ -115,10 +115,11 @@ function droneControl.getWaitingDrones(timeout, n)
     local nonce = newNonce()
     local modem = component.modem
     modem.open(dronePort)
-    modem.broadcast(dronePort, 'echo', nonce)
+    modem.broadcast(dronePort, 'status', nonce)
     while computer.uptime() <= deadline and not (n and #found >= n) do
         local tout = deadline - computer.uptime()
         local ev = { event.pull(tout, 'modem_message') }
+        print('got', table.unpack(ev))
         if ev[6] == 'status' and ev[7] == 'idle' and ev[8] == nonce then
             table.insert(found, ev[3])
         end

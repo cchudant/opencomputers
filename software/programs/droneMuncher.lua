@@ -115,7 +115,7 @@ elseif command == 'unmunch' then
     
     local deployed = 0
 
-    while (not amount or amount < deployed) and inv.getStackInSlot(sides.down, 1) do
+    while (not amount or deployed < amount) and inv.getStackInSlot(sides.down, 1) do
         local goodEeproms = inv.getStackInInternalSlot(slotGoodEeprom)
         if not goodEeproms or goodEeproms.name ~= eepromItemName then
             robot.select(slotGoodEeprom)

@@ -72,6 +72,8 @@ end
 local args = ...
 
 if args == 'munch' then
+    -- Messages travel up to 10 blocks.
+    component.getPrimary('modem').setStrength(10)
     robot.select(slotScrench)
 
     local item = inv.getStackInInternalSlot(slotScrench)
@@ -83,8 +85,8 @@ if args == 'munch' then
     inv.equip()
 
     robot.select(1)
-    while inv.use(sides.front, true) do
-        inv.dropDown()
+    while robot.use(sides.front, true) do
+        robot.dropDown()
     end
 
     robot.select(slotScrench)

@@ -92,9 +92,9 @@ else
 
     for chunk in schem:chunks() do
         while true do
-            local drones = droneControl.getWaitingDrones( --[[timeout sec]] 3)
-            if #drones < 1 then print('No drone found.') end
-            for _, droneAddr in ipairs(drones) do
+            local drones = droneControl.getWaitingDrones( --[[timeout sec]] 3, --[[num]] 1)
+            if #drones > 0 then
+                local droneAddr = drones[1]
                 local x, y, z, xlen, ylen, zlen, blocks, matlist =
                     chunk.cx * schematic.chunkSizeX + schemX,
                     schemY,
@@ -105,14 +105,13 @@ else
 
                 print('Run /software/drone/schemPlacer.lua', serialization.serialize(droneArgs))
 
-                print(droneAddr)
-
-                -- droneControl.run(
-                --     droneAddr, '/software/drone/schemPlacer.lua',
-                --     serialization.serialize(droneArgs)
-                -- )
+                droneControl.run(
+                    droneAddr, '/software/drone/schemPlacer.lua',
+                    serialization.serialize(droneArgs)
+                )
                 break
             end
+            print('No drone found.')
         end
     end
 

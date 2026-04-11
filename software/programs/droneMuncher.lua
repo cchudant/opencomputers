@@ -63,7 +63,7 @@ end
 --place and activate drone, then send signal for drones nearby to move to waiting area
 local function deploy()
     robot.select(1)
-    while robot.place(sides.front) do end
+    while not robot.place(sides.front) do end
     os.sleep(3)
     while not robot.use(sides.front, true) do end
     os.sleep(3)

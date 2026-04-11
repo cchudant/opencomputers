@@ -127,14 +127,14 @@ else
                     print('Checking for drones...')
                     drones = droneControl.getWaitingDrones( --[[timeout sec]] 5, --[[num]] nil, --[[maxDistance]] 2.5)
                 end
-    
+
                 local droneAddr = table.remove(drones)
-    
+
                 local droneArgs = { x, y, z, xlen, ylen, zlen, blocks, matlist }
-    
+
                 print('Dispatch [' .. i .. '] ' ..
                     droneAddr .. ': ' .. x .. ',' .. y .. ',' .. z .. ' ' .. xlen .. 'x' .. ylen .. 'x' .. zlen)
-    
+
                 droneControl.run(
                     droneAddr, '/software/drone/schemPlacer.lua',
                     serialization.serialize(droneArgs)
@@ -165,7 +165,7 @@ else
         end
     end
 
-    thread.waitForAny(dispatch, receiveDoneMessages)
+    thread.waitForAny({ dispatch, receiveDoneMessages })
 
     doneChunksFile:close()
 end

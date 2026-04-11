@@ -121,6 +121,7 @@ local function fillinventory()
                     end
                     setexport(i)
                     while export.exportIntoSlot(sides.north, i) do
+                        print('eported ' .. i)
                         didWork = true
                         didWorkThisRound = true
                     end

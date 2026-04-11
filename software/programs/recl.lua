@@ -118,17 +118,6 @@ else
         local schemX, schemY, schemZ = 192, 10, -880
 
         local i = 1
-        for _ = 1, 90 * 2 do
-            local chunk = schem:nextChunk() --[[@as schematic.Chunk]]
-            local x, y, z =
-                chunk.cx * schematic.chunkSizeX + schemX,
-                schemY,
-                chunk.cz * schematic.chunkSizeZ + schemZ
-
-            markDone(x, y, z)
-
-            i = i + 1
-        end
         local drones = {}
 
         for chunk in schem:chunks() do
@@ -155,8 +144,8 @@ else
                     droneAddr, '/software/drone/schemPlacer.lua',
                     serialization.serialize(droneArgs)
                 )
-                i = i + 1
             end
+            i = i + 1
         end
 
         print('All done.')

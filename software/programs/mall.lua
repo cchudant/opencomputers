@@ -119,7 +119,7 @@ local function fillinventory()
                         check_me(i)
                     end
                     setexport(i)
-                    export.exportIntoSlot(sides.north, i)
+                    while export.exportIntoSlot(sides.north, i) do end
 
                     didWork = true
                     didWorkThisRound = true

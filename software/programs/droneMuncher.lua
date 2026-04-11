@@ -65,7 +65,7 @@ local function deploy()
     robot.select(1)
     while robot.place(sides.front) do end
     os.sleep(3)
-    while robot.use(sides.front, true) do end
+    while not robot.use(sides.front, true) do end
     os.sleep(3)
     droneControl.run(nil, '/software/drone/unmunch.lua')
 end

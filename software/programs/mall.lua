@@ -106,24 +106,29 @@ end
 ---@returns true if it did any work
 local function fillinventory()
     local didWork = false
-    for i = 1, inv.getInventorySize(sides.up) do
-        if isregistered[i] then
-            local items = inv.getStackInSlot(sides.up, i)
+    local didWorkThisRound = false
+    local firstRound = true
+    repeat
+        for i = 1, inv.getInventorySize(sides.up) do
+            if isregistered[i] then
+                local items = inv.getStackInSlot(sides.up, i)
 
-            if items == nil or items.size < 64 then
-                check_me(i)
-                setexport(i)
-                export.exportIntoSlot(sides.north, i)
-                os.sleep(0.1)
-                while inv.getStackInSlot(sides.up, i) == nil do
+                if items == nil or items.size < 64 then
+                    if firstRound then
+                        -- only check on first round
+                        check_me(i)
+                    end
+                    setexport(i)
                     export.exportIntoSlot(sides.north, i)
-                    os.sleep(0.1)
-                end
 
-                didWork = true
+                    didWork = true
+                    didWorkThisRound = true
+                end
             end
         end
-    end
+        firstRound = false
+        -- repeat all of it until nothing left to do
+    until not didWorkThisRound
     return didWork
 end
 

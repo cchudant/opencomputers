@@ -3,7 +3,7 @@
 -- The original had its coroutine handling done very differently, I fixed it to the proper way
 -- of doing it, among other things.
 
-local port, gpsPort = 20, 46
+local port, outPort, gpsPort = 20, 21, 46
 local isErr = false
 
 for add, typ in pairs(component.list()) do
@@ -19,7 +19,7 @@ function print(...)
         if i > 1 then m = m .. '\t' end
         m = m .. (tostring(a[i]) or '<unknown>')
     end
-    modem.broadcast(port, "log", m)
+    modem.broadcast(outPort, "log", m)
 end
 
 ---@type drone.Position
@@ -135,7 +135,7 @@ local function handleModem(s)
     if s[6] == 'status' then
         local status = 'idle'
         if usr then status = 'running' end
-        modem.send(s[3], port, 'status', status, s[7])
+        modem.send(s[3], outPort, 'status', status, s[7])
     elseif s[6] == 'run' and not usr then
         code = s[7]
         usr = coroutine.create(function() return userRoutine(table.unpack(s, 8)) end)
@@ -179,11 +179,10 @@ if modem ~= nil then
 end
 
 computer.beep(1000, 0.5)
-modem.broadcast(port, 'started')
+modem.broadcast(outPort, 'started')
 
 local function main()
-    local lastGpsPing
-    local timeout = 5
+    local timeout
     while true do
         if isErr then
             drone.setLightColor(0xff0000) -- Red: error
@@ -191,16 +190,8 @@ local function main()
             drone.setLightColor(0xffff00) -- Yellow: waiting
         end
 
-        local ts = computer.uptime()
-        if not drone.moving and
-            (not drone.gpsUpdatedAt or ts > drone.gpsUpdatedAt + 30) and (not lastGpsPing or ts > lastGpsPing + 5) then
-            modem.broadcast(gpsPort, 'PING')
-            lastGpsPing = ts
-            timeout = math.min(timeout, 3)
-        end
-
         local s = { rawpull(timeout) }
-        timeout = 5
+        timeout = nil
 
         if s[1] == "modem_message" then
             handleModem(s)

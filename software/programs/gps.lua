@@ -37,7 +37,7 @@ elseif command == 'host' then
             os.exit()
         end
     end
-    local event = require('event')
+    -- local event = require('event')
     local modem = component.modem
     if modem.isWireless() then
         print('Serving GPS requests')
@@ -45,20 +45,21 @@ elseif command == 'host' then
         print('No modem attached')
         os.exit()
     end
-    local term = require('term')
+    -- local term = require('term')
     modem.open(channel)
-    local served = 0
+    -- local served = 0
     while true do
-        local e = { event.pull('modem_message') }
-        if e[6] == 'PING' then
-            modem.broadcast(channel, 'GPS', x, y, z)
-            served = served + 1
-            if served > 1 then
-                local x_, y_ = term.getCursor()
-                term.setCursor(x_, y_ - 1)
-            end
-            print(served .. ' GPS Requests served')
-        end
+        -- local e = { event.pull('modem_message') }
+        os.sleep(5)
+        -- if e[6] == 'PING' then
+        modem.broadcast(channel, 'GPS', x, y, z)
+        -- served = served + 1
+        -- if served > 1 then
+        --     local x_, y_ = term.getCursor()
+        --     term.setCursor(x_, y_ - 1)
+        -- end
+        -- print(served .. ' GPS Requests served')
+        -- end
     end
 else
     usage()

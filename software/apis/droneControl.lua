@@ -35,7 +35,7 @@ end
 
 local gray = 0xa9a9a9;
 
-local dronePort = 20
+local droneInPort, droneOutPort = 20, 21
 
 local droneControl = {}
 
@@ -66,8 +66,8 @@ function droneControl.logDrones()
         term.gpu().setResolution(term.gpu().maxResolution())
     end
     local modem = component.modem
-    modem.open(dronePort)
-    modem.broadcast(dronePort, 'status', 1)
+    modem.open(droneOutPort)
+    modem.broadcast(droneInPort, 'status', 1)
     print('Listening.')
     while true do
         local ev = { event.pull('modem_message') }
@@ -101,9 +101,9 @@ function droneControl.run(droneAddr, path, ...)
     local content = file:read('a'):gsub("[ ]+", " "):gsub("[ ]*[-][-][^\n]*\n", "\n"):gsub("\n ", "\n")
     file:close()
     if droneAddr then
-        modem.send(droneAddr, dronePort, 'run', content, ...)
+        modem.send(droneAddr, droneInPort, 'run', content, ...)
     else
-        modem.broadcast(dronePort, 'run', content, ...)
+        modem.broadcast(droneInPort, 'run', content, ...)
     end
 end
 
@@ -115,8 +115,8 @@ function droneControl.getWaitingDrones(timeout, n, maxDistance)
     local deadline = computer.uptime() + timeout
     local nonce = newNonce()
     local modem = component.getPrimary('modem')
-    modem.open(dronePort)
-    modem.broadcast(dronePort, 'status', nonce)
+    modem.open(droneOutPort)
+    modem.broadcast(droneInPort, 'status', nonce)
     while computer.uptime() <= deadline and not (n and #found >= n) do
         local tout = deadline - computer.uptime()
         local ev = { event.pull(tout, 'modem_message') }

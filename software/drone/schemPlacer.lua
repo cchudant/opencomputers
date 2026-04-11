@@ -1,7 +1,7 @@
 drone.gpsUpdatedAt = nil
 drone.gpsMsgs = {}
 
-os.sleep(3)
+drone.sleep(3)
 
 while not drone.gpsUpdatedAt do
     drone.setLightColor(0xFFFFFF)

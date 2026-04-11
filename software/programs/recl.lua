@@ -4,6 +4,9 @@ local schematic = require('.software.apis.schematic')
 local serialization = require('serialization')
 local sides = require('sides')
 local component = require('component')
+local thread = require('thread')
+local io = require('io')
+local event = require('event')
 
 local args, ops = shell.parse(...)
 
@@ -86,44 +89,83 @@ if action == 'checkMatList' then
 
     schem:close()
 else
-    component.getPrimary('modem').setStrength(20)
-    local schem = schematic.Schematic.load(schemFilePath, substitutions)
+    local doneChunksFile = io.open('/home/doneChunks', 'r')
+    local doneChunks = {}
 
-    local schemX, schemY, schemZ = 192, 10, -880
-
-    local i = 1
-    for _ = 1, 95 * 2 do
-        schem:nextChunk()
-        i = i + 1
-    end
-    local drones = {}
-
-    for chunk in schem:chunks() do
-        while #drones < 1 do
-            print('Checking for drones...')
-            drones = droneControl.getWaitingDrones( --[[timeout sec]] 5, --[[num]] nil, --[[maxDistance]] 2.5)
+    if doneChunksFile then
+        for line in doneChunksFile:lines() do
+            doneChunks[line] = true
         end
 
-        local droneAddr = table.remove(drones)
-        local x, y, z, xlen, ylen, zlen, blocks, matlist =
-            chunk.cx * schematic.chunkSizeX + schemX,
-            schemY,
-            chunk.cz * schematic.chunkSizeZ + schemZ,
-            chunk.lenx, chunk.leny, chunk.lenz, chunk.blocks, chunk.materials
-
-        local droneArgs = { x, y, z, xlen, ylen, zlen, blocks, matlist }
-
-        print('Dispatch [' .. i .. '] ' ..
-            droneAddr .. ': ' .. x .. ',' .. y .. ',' .. z .. ' ' .. xlen .. 'x' .. ylen .. 'x' .. zlen)
-
-        droneControl.run(
-            droneAddr, '/software/drone/schemPlacer.lua',
-            serialization.serialize(droneArgs)
-        )
-        i = i + 1
+        doneChunksFile:close()
     end
 
-    print('All done.')
+    doneChunksFile = io.open('/home/doneChunks', 'a') --[[@as file*]]
 
-    schem:close()
+    local function dispatch()
+        component.getPrimary('modem').setStrength(20)
+        local schem = schematic.Schematic.load(schemFilePath, substitutions)
+
+        local schemX, schemY, schemZ = 192, 10, -880
+
+        local i = 1
+        for _ = 1, 90 * 2 do
+            schem:nextChunk()
+            i = i + 1
+        end
+        local drones = {}
+
+        for chunk in schem:chunks() do
+            local x, y, z, xlen, ylen, zlen, blocks, matlist =
+                chunk.cx * schematic.chunkSizeX + schemX,
+                schemY,
+                chunk.cz * schematic.chunkSizeZ + schemZ,
+                chunk.lenx, chunk.leny, chunk.lenz, chunk.blocks, chunk.materials
+
+            if not doneChunks[string.format('%s,%s,%s', x, y, z)] then
+                while #drones < 1 do
+                    print('Checking for drones...')
+                    drones = droneControl.getWaitingDrones( --[[timeout sec]] 5, --[[num]] nil, --[[maxDistance]] 2.5)
+                end
+    
+                local droneAddr = table.remove(drones)
+    
+                local droneArgs = { x, y, z, xlen, ylen, zlen, blocks, matlist }
+    
+                print('Dispatch [' .. i .. '] ' ..
+                    droneAddr .. ': ' .. x .. ',' .. y .. ',' .. z .. ' ' .. xlen .. 'x' .. ylen .. 'x' .. zlen)
+    
+                droneControl.run(
+                    droneAddr, '/software/drone/schemPlacer.lua',
+                    serialization.serialize(droneArgs)
+                )
+                i = i + 1
+            end
+        end
+
+        print('All done.')
+
+        schem:close()
+    end
+
+    local function receiveDoneMessages()
+        component.getPrimary('modem').open(732)
+        while true do
+            local ev = { event.pull('modem_message') }
+            if ev[6] == 'schemPlacerFinished' then
+                local x, y, z = table.unpack(ev, 7)
+
+                local key = string.format('%s,%s,%s', x, y, z)
+
+                table.insert(doneChunks, key)
+                doneChunksFile:write(key, '\n')
+                doneChunksFile:flush()
+                print('Chunk at ' .. key .. ' marked as done.')
+            end
+        end
+    end
+
+    thread.waitForAny(dispatch, receiveDoneMessages)
+
+    doneChunksFile:close()
 end

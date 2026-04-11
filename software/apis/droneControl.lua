@@ -120,7 +120,7 @@ function droneControl.getWaitingDrones(timeout, n, maxDistance)
     while computer.uptime() <= deadline and not (n and #found >= n) do
         local tout = deadline - computer.uptime()
         local ev = { event.pull(tout, 'modem_message') }
-        if (not maxDistance or not ev[5] or ev[5] <= maxDistance) and ev[6] == 'status' and ev[7] == 'idle' then
+        if (not maxDistance or not ev[5] or ev[5] <= maxDistance) and ev[6] == 'status' and ev[7] == 'idle' and ev[8] == nonce then
             table.insert(found, ev[3])
         end
     end

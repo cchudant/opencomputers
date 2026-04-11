@@ -234,8 +234,11 @@ for dx = 0, xlen - 1 do
 end
 
 drone.setAcceleration(999999)
+drone.moveRel(0, 5, 0)
 drone.moveTo(safe2)
 drone.moveTo(safe1)
 drone.setAcceleration(acl)
 drone.moveTo(home)
 dump()
+
+modem.broadcast(732, 'schemPlacerFinished', x, y, z)

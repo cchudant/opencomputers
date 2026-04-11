@@ -165,7 +165,12 @@ else
         end
     end
 
-    thread.waitForAny({ dispatch, receiveDoneMessages })
+    local t1, t2 = thread.create(dispatch), thread.create(receiveDoneMessages)
+
+    thread.waitForAny({ t1, t2 })
+
+    t1:kill()
+    t2:kill()
 
     doneChunksFile:close()
 end

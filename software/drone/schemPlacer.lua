@@ -1,14 +1,25 @@
+drone.gpsUpdatedAt = nil
+drone.gpsMsgs = {}
+
+os.sleep(3)
+
 while not drone.gpsUpdatedAt do
     drone.setLightColor(0xFFFFFF)
     drone.setStatusText('GPS...')
     drone.sleep(1)
 end
+drone.setLightColor(0x00FF00)
+
+local x, y, z = 584.5, 141.5, -488.5
+
+drone.moveTo(x, y, z)
 
 while computer.energy() < computer.maxEnergy() * 0.95 do
     drone.setLightColor(0xFFA500)
     drone.setStatusText('CHARGE')
     drone.sleep(1)
 end
+drone.setLightColor(0x00FF00)
 
 local ic = inventory_controller
 local sides = {
@@ -56,7 +67,6 @@ end
 
 local x, y, z, xlen, _, zlen, blocks, mlist = table.unpack(unser(args))
 
-drone.setLightColor(0x00FF00)
 drone.setStatusText(string.format('%s,%s,%s', x, y, z))
 
 local home = drone.position

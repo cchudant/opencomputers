@@ -109,7 +109,8 @@ end
 
 ---@param n nil|number
 ---@return string[] addresses
-function droneControl.getWaitingDrones(timeout, n, distance)
+---@return nil|number maxDistance
+function droneControl.getWaitingDrones(timeout, n, maxDistance)
     local found = {}
     local deadline = computer.uptime() + timeout
     local nonce = newNonce()
@@ -119,7 +120,7 @@ function droneControl.getWaitingDrones(timeout, n, distance)
     while computer.uptime() <= deadline and not (n and #found >= n) do
         local tout = deadline - computer.uptime()
         local ev = { event.pull(tout, 'modem_message') }
-        if (not distance or ev[5] <= distance) and ev[6] == 'status' and ev[7] == 'idle' and ev[8] == nonce then
+        if (not maxDistance or ev[5] <= maxDistance) and ev[6] == 'status' and ev[7] == 'idle' and ev[8] == nonce then
             table.insert(found, ev[3])
         end
     end

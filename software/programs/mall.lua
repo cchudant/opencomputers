@@ -106,9 +106,10 @@ end
 ---@returns true if it did any work
 local function fillinventory()
     local didWork = false
-    local didWorkThisRound = false
+    local didWorkThisRound
     local firstRound = true
     repeat
+        didWorkThisRound = false
         for i = 1, inv.getInventorySize(sides.up) do
             if isregistered[i] then
                 local items = inv.getStackInSlot(sides.up, i)

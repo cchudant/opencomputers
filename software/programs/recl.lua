@@ -91,7 +91,7 @@ else
 
     local schemX, schemY, schemZ = 192, 10, -880
 
-    for _ = 1, 88 do
+    for _ = 1, 88*2 do
         schem:nextChunk()
     end
     local drones = {}

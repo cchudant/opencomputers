@@ -81,7 +81,7 @@ function droneControl.logDrones()
         elseif ev[6] == 'status' then
             writeWithColor("[", gray)
             writeWithColor(shortAddr, color)
-            writeWithColor(" status: " .. ev[6] .. "]\n", gray)
+            writeWithColor(" status: " .. ev[7] .. "]\n", gray)
         elseif ev[6] == 'log' then
             writeWithColor(shortAddr, color)
             writeWithColor(": " .. ev[7] .. "\n", gray)
@@ -113,7 +113,7 @@ function droneControl.getWaitingDrones(timeout, n)
     local found = {}
     local deadline = computer.uptime() + timeout
     local nonce = newNonce()
-    local modem = component.modem
+    local modem = component.getPrimary('modem')
     modem.open(dronePort)
     modem.broadcast(dronePort, 'status', nonce)
     while computer.uptime() <= deadline and not (n and #found >= n) do

@@ -72,7 +72,6 @@ end
 local command, arg1 = ...
 
 if command == 'munch' then
-    -- Messages travel up to 10 blocks.
     component.getPrimary('modem').setStrength(20)
     robot.select(slotScrench)
 

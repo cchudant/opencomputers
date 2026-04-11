@@ -181,7 +181,6 @@ end
 computer.beep(1000, 0.5)
 modem.broadcast(port, 'started')
 
-
 local function main()
     local lastGpsPing
     local timeout = 5

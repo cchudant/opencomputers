@@ -91,9 +91,13 @@ else
 
     local schemX, schemY, schemZ = 192, 10, -880
 
+    for _ = 1, 88 do
+        schem:nextChunk()
+    end
+
     for chunk in schem:chunks() do
         while true do
-            local drones = droneControl.getWaitingDrones( --[[timeout sec]] 3, --[[num]] 1)
+            local drones = droneControl.getWaitingDrones( --[[timeout sec]] 0.2, --[[num]] 1)
             if #drones > 0 then
                 local droneAddr = drones[1]
                 local x, y, z, xlen, ylen, zlen, blocks, matlist =

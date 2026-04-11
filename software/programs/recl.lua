@@ -102,6 +102,15 @@ else
 
     doneChunksFile = io.open('/home/doneChunks', 'a') --[[@as file*]]
 
+    local function markDone(x, y, z)
+        local key = string.format('%s,%s,%s', x, y, z)
+
+        table.insert(doneChunks, key)
+        doneChunksFile:write(key, '\n')
+        doneChunksFile:flush()
+        print('Chunk at ' .. key .. ' marked as done.')
+    end
+
     local function dispatch()
         component.getPrimary('modem').setStrength(20)
         local schem = schematic.Schematic.load(schemFilePath, substitutions)
@@ -110,7 +119,14 @@ else
 
         local i = 1
         for _ = 1, 90 * 2 do
-            schem:nextChunk()
+            local chunk = schem:nextChunk() --[[@as schematic.Chunk]]
+            local x, y, z =
+                chunk.cx * schematic.chunkSizeX + schemX,
+                schemY,
+                chunk.cz * schematic.chunkSizeZ + schemZ
+
+            markDone(x, y, z)
+
             i = i + 1
         end
         local drones = {}
@@ -154,13 +170,7 @@ else
             local ev = { event.pull('modem_message') }
             if ev[6] == 'schemPlacerFinished' then
                 local x, y, z = table.unpack(ev, 7)
-
-                local key = string.format('%s,%s,%s', x, y, z)
-
-                table.insert(doneChunks, key)
-                doneChunksFile:write(key, '\n')
-                doneChunksFile:flush()
-                print('Chunk at ' .. key .. ' marked as done.')
+                markDone(x, y, z)
             end
         end
     end

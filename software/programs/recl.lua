@@ -91,8 +91,10 @@ else
 
     local schemX, schemY, schemZ = 192, 10, -880
 
-    for _ = 1, 88*2 do
+    local i = 1
+    for _ = 1, 95 * 2 do
         schem:nextChunk()
+        i = i + 1
     end
     local drones = {}
 
@@ -111,13 +113,14 @@ else
 
         local droneArgs = { x, y, z, xlen, ylen, zlen, blocks, matlist }
 
-        print('Dispatch ' ..
+        print('Dispatch []' .. i .. '] ' ..
             droneAddr .. ': ' .. x .. ',' .. y .. ',' .. z .. ' ' .. xlen .. 'x' .. ylen .. 'x' .. zlen)
 
         droneControl.run(
             droneAddr, '/software/drone/schemPlacer.lua',
             serialization.serialize(droneArgs)
         )
+        i = i + 1
     end
 
     print('All done.')

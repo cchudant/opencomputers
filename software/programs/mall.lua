@@ -120,16 +120,16 @@ local function fillinventory()
                         check_me(i)
                     end
                     setexport(i)
-                    while export.exportIntoSlot(sides.north, i) do
-                        print('eported ' .. i)
-                        didWork = true
+                    if export.exportIntoSlot(sides.north, i) then
+                        while export.exportIntoSlot(sides.north, i) do
+                        end
                         didWorkThisRound = true
                     end
-
                 end
             end
         end
         firstRound = false
+        didWork = didWork or didWorkThisRound
         -- repeat all of it until nothing left to do
     until not didWorkThisRound
     return didWork

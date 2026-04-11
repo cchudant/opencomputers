@@ -113,7 +113,7 @@ else
 
         local droneArgs = { x, y, z, xlen, ylen, zlen, blocks, matlist }
 
-        print('Dispatch []' .. i .. '] ' ..
+        print('Dispatch [' .. i .. '] ' ..
             droneAddr .. ': ' .. x .. ',' .. y .. ',' .. z .. ' ' .. xlen .. 'x' .. ylen .. 'x' .. zlen)
 
         droneControl.run(

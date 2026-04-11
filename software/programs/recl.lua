@@ -99,28 +99,25 @@ else
     for chunk in schem:chunks() do
         while #drones < 1 do
             print('Checking for drones...')
-            drones = droneControl.getWaitingDrones( --[[timeout sec]] 5, --[[num]] 1, --[[maxDistance]] 2.5)
+            drones = droneControl.getWaitingDrones( --[[timeout sec]] 5, --[[num]] nil, --[[maxDistance]] 2.5)
         end
 
-        if #drones > 0 then
-            local droneAddr = table.remove(drones)
-            local x, y, z, xlen, ylen, zlen, blocks, matlist =
-                chunk.cx * schematic.chunkSizeX + schemX,
-                schemY,
-                chunk.cz * schematic.chunkSizeZ + schemZ,
-                chunk.lenx, chunk.leny, chunk.lenz, chunk.blocks, chunk.materials
+        local droneAddr = table.remove(drones)
+        local x, y, z, xlen, ylen, zlen, blocks, matlist =
+            chunk.cx * schematic.chunkSizeX + schemX,
+            schemY,
+            chunk.cz * schematic.chunkSizeZ + schemZ,
+            chunk.lenx, chunk.leny, chunk.lenz, chunk.blocks, chunk.materials
 
-            local droneArgs = { x, y, z, xlen, ylen, zlen, blocks, matlist }
+        local droneArgs = { x, y, z, xlen, ylen, zlen, blocks, matlist }
 
-            print('Dispatch ' ..
+        print('Dispatch ' ..
             droneAddr .. ': ' .. x .. ',' .. y .. ',' .. z .. ' ' .. xlen .. 'x' .. ylen .. 'x' .. zlen)
 
-            droneControl.run(
-                droneAddr, '/software/drone/schemPlacer.lua',
-                serialization.serialize(droneArgs)
-            )
-            break
-        end
+        droneControl.run(
+            droneAddr, '/software/drone/schemPlacer.lua',
+            serialization.serialize(droneArgs)
+        )
     end
 
     print('All done.')

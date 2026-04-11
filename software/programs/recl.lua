@@ -86,7 +86,7 @@ if action == 'checkMatList' then
 
     schem:close()
 else
-    component.getPrimary('modem').setStrength(2)
+    component.getPrimary('modem').setStrength(20)
     local schem = schematic.Schematic.load(schemFilePath, substitutions)
 
     local schemX, schemY, schemZ = 192, 10, -880
@@ -97,7 +97,7 @@ else
 
     for chunk in schem:chunks() do
         while true do
-            local drones = droneControl.getWaitingDrones( --[[timeout sec]] 0.2, --[[num]] 1)
+            local drones = droneControl.getWaitingDrones( --[[timeout sec]] 0.2, --[[num]] 1, --[[maxDistance]] 2.0)
             if #drones > 0 then
                 local droneAddr = drones[1]
                 local x, y, z, xlen, ylen, zlen, blocks, matlist =

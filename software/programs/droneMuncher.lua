@@ -63,8 +63,9 @@ end
 --place and activate drone, then send signal for drones nearby to move to waiting area
 local function deploy()
     robot.select(1)
-    robot.place(sides.front)
-    robot.use(sides.front, true)
+    while robot.place(sides.front) do end
+    os.sleep(3)
+    while robot.use(sides.front, true) do end
     os.sleep(3)
     droneControl.run(nil, '/software/drone/unmunch.lua')
 end

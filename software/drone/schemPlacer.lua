@@ -108,7 +108,7 @@ end
 
 local iter = 1
 -- Outer loop: dump, do groceries, then place, come back.
-local notEnoughSpace = false
+local notEnoughSpace = true
 while notEnoughSpace do
     notEnoughSpace = false
     while computer.energy() < computer.maxEnergy() * 0.95 do

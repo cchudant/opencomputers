@@ -19,7 +19,7 @@ end
 
 local action = 'deploy'
 
-local schemFilePath = '/home/reclamation4_y10.data'
+local schemFilePath = '/home/reclamation5_y11.data'
 
 if type(ops['checkMatList']) == 'boolean' then
     action = 'checkMatList'
@@ -41,7 +41,7 @@ local lqds = {
     ['2055:10'] = "poison",
     ['2055:11'] = "water",
     ['2055:14'] = "lava",
-    ['682:1'] = "oil",
+    ['2055:15'] = "oil",
 }
 
 local substitutions = {

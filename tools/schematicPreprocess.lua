@@ -1,6 +1,6 @@
 local nbt = require('tools.nbt')
 
-local file = io.open('./tools/reclamation4_y10.nbt') --[[@as file*]]
+local file = io.open('./tools/reclamation5_y11.nbt') --[[@as file*]]
 local content = file:read('a')
 file:close()
 local tag = nbt.decode(content, 'tag') --[[@as table]]
@@ -38,7 +38,7 @@ end
 local palette = {}
 local materialList = {}
 
-local outFile = io.open('./tools/reclamation4_y10.data', 'w+b') --[[@as file*]]
+local outFile = io.open('./tools/reclamation5_y11.data', 'w+b') --[[@as file*]]
 
 outFile:write(string.pack('>I4>I4>I4', xlength, ylength, zlength))
 

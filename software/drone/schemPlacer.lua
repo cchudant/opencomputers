@@ -1,5 +1,6 @@
 drone.gpsUpdatedAt = nil
 drone.gpsMsgs = {}
+drone.setAcceleration(9999999)
 
 while not drone.gpsUpdatedAt do
     drone.setLightColor(0xFFFFFF)
@@ -120,8 +121,10 @@ end
 
 -- Outer loop: dump, do groceries, then place, come back.
 local didSmth = true
-while didSmth do
+local notEnoughSpace = false
+while didSmth or notEnoughSpace do
     didSmth = false
+    notEnoughSpace = false
 
     -- Do groceries: get batch items
 
@@ -130,14 +133,17 @@ while didSmth do
         local gotAll = true
         for _, m in ipairs(stock) do
             local n = (mlist[m] or 0) - (got[m] or 0)
-            if n > 0 and hasRoom(m) then
-                gotAll = false
-                print('1) need ', n, m)
-                for i = 1, ic.getInventorySize(sides.posz) do
-                    local it = ic.getStackInSlot(sides.posz, i)
-                    if m == mat(it) and ic.suckFromSlot(sides.posz, i, math.min(n, 64, it.size)) then
-                        -- we don't know how many we sucked, recompute it. (necessary for inter-drone race conditions)
-                        recompGot(m)
+            if n > 0 and not lqds[m] and m ~= '0' then
+                if not hasRoom(m) then
+                    notEnoughSpace = true
+                else
+                    gotAll = false
+                    for i = 1, ic.getInventorySize(sides.posz) do
+                        local it = ic.getStackInSlot(sides.posz, i)
+                        if m == mat(it) and ic.suckFromSlot(sides.posz, i, math.min(n, 64, it.size)) then
+                            -- we don't know how many we sucked, recompute it. (necessary for inter-drone race conditions)
+                            recompGot(m)
+                        end
                     end
                 end
             end
@@ -151,14 +157,17 @@ while didSmth do
         local gotAll = true
         for _, m in ipairs(mlist) do
             local n = (mlist[m] or 0) - (got[m] or 0)
-            if n > 0 and hasRoom(m) and not lqds[m] and m ~= '0' then
-                print('2) need ', n, m)
-                gotAll = false
-                for i = 1, ic.getInventorySize(sides.posz) do
-                    local it = ic.getStackInSlot(sides.posz, i)
-                    if m == mat(it) and ic.suckFromSlot(sides.posz, i, math.min(n, 64, it.size)) then
-                        -- we don't know how many we sucked, recompute it. (necessary for inter-drone race conditions)
-                        recompGot(m)
+            if n > 0 and not lqds[m] and m ~= '0' then
+                if not hasRoom(m) then
+                    notEnoughSpace = true
+                else
+                    gotAll = false
+                    for i = 1, ic.getInventorySize(sides.posz) do
+                        local it = ic.getStackInSlot(sides.posz, i)
+                        if m == mat(it) and ic.suckFromSlot(sides.posz, i, math.min(n, 64, it.size)) then
+                            -- we don't know how many we sucked, recompute it. (necessary for inter-drone race conditions)
+                            recompGot(m)
+                        end
                     end
                 end
             end
@@ -189,6 +198,9 @@ while didSmth do
                         sts.lqd = n
                         sts.cnt = sts.cnt + tkn * 1000
                     end
+                end
+                if (mlist[m] or 0) - (got[m] or 0) > 0 then
+                    notEnoughSpace = true
                 end
             end
         end
@@ -221,6 +233,7 @@ while didSmth do
                             sts.cnt = sts.cnt - 1000
                             continue = true
                             blocks[j] = '0'
+                            mlist[b] = mlist[b] - 1
                             didSmth = true
                             break
                         end
@@ -233,6 +246,7 @@ while didSmth do
                             if drone.place(sides.negy) or drone.detect(sides.negy) then
                                 continue = true
                                 blocks[j] = '0'
+                                mlist[b] = mlist[b] - 1
                                 didSmth = true
                             end
                             break
@@ -253,6 +267,7 @@ while didSmth do
     drone.moveTo(safe1)
     drone.moveTo(home)
     dump()
+    got = {}
 end
 
 modem.broadcast(732, 'schemPlacerFinished', x, y, z)

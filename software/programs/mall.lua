@@ -58,6 +58,10 @@ local function registerinventory()
                     store_masterdb(i)
                 end
                 isregistered[i] = true
+            else
+                if get_masterdb(i) then
+                    isregistered[i] = true
+                end
             end
         end
     end

@@ -205,6 +205,10 @@ repeat
 
     -- We're ready!
 
+    for i = 1, drone.tankCount() do
+        print("tank", i, drone.tankLevel(i))
+    end
+
     -- Go to location.
 
     local acr = drone.getAcceleration()

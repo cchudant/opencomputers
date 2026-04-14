@@ -180,16 +180,15 @@ while notEnoughSpace do
     for _ = 1, 4 do
         drone.moveRel(-1, 0, 0)
         local flds = tank_controller.getFluidInTank(sides.posz)
-        print(#flds, flds[1])
 
         for m, n in pairs(lqds) do
-            if flds and flds[1] and n == flds[1].name and (mlist[m] or 0) - (got[m] or 0) > 0 then
+            if flds and flds[1] and n == flds[1].name then
                 -- find empty/tank with same fluid
                 for tI, sts in ipairs(tSts) do
-                    if not sts.lqd or sts.lqd == n then
+                    local need = (mlist[m] or 0) - (got[m] or 0)
+                    if not sts.lqd or sts.lqd == n and need > 0 then
                         drone.selectTank(tI)
-                        local tkn = math.min(math.floor(drone.tankSpace(tI) / 1000), (mlist[m] or 0) - (got[m] or 0))
-                        print('took', tI, tkn, n)
+                        local tkn = math.min(math.floor(drone.tankSpace(tI) / 1000), need)
                         drone.drain(sides.posz, tkn * 1000)
                         got[m] = (got[m] or 0) + tkn
                         sts.lqd = n

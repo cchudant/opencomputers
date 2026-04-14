@@ -108,8 +108,8 @@ end
 
 local iter = 1
 -- Outer loop: dump, do groceries, then place, come back.
-local notEnoughSpace = true
-while notEnoughSpace do
+local notEnoughSpace
+repeat
     notEnoughSpace = false
     while computer.energy() < computer.maxEnergy() * 0.95 do
         drone.setLightColor(0xFFA500)
@@ -267,6 +267,6 @@ while notEnoughSpace do
     dump()
     got = {}
     iter = iter + 1
-end
+until not notEnoughSpace
 
 modem.broadcast(732, 'schemPlacerFinished', x, y, z)

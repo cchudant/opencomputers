@@ -20,6 +20,7 @@ end
 local action = 'deploy'
 
 local schemFilePath = '/home/reclamation5_y11.data'
+local schemX, schemY, schemZ = 192, 11, -880
 
 if type(ops['checkMatList']) == 'boolean' then
     action = 'checkMatList'
@@ -118,7 +119,6 @@ else
         component.getPrimary('modem').setStrength(20)
         local schem = schematic.Schematic.load(schemFilePath, substitutions)
 
-        local schemX, schemY, schemZ = 192, 10, -880
 
         local i = 1
         local drones = {}

@@ -90,7 +90,7 @@ local function check_me(slot)
     local invcheck = me.getItemsInNetwork({ id = idnum, damage = damagenum })
     if #invcheck ~= 0 then
         if invcheck[1].size < 1000 then
-            if not me.getCraftables({ id = idnum, damage = damagenum }) then
+            if not next(me.getCraftables({ id = idnum, damage = damagenum })) then
                 print("Unable to request " .. databases[db].get(dbslot).label)
             else
                 local status = me.getCraftables({ id = idnum, damage = damagenum })[1].request(10000)

@@ -108,10 +108,8 @@ end
 
 local iter = 1
 -- Outer loop: dump, do groceries, then place, come back.
-local didSmth = true
 local notEnoughSpace = false
-while didSmth or notEnoughSpace do
-    didSmth = false
+while notEnoughSpace do
     notEnoughSpace = false
 
     drone.setStatusText(string.format('%s,%s\ni=%s', x, z, iter))
@@ -234,7 +232,6 @@ while didSmth or notEnoughSpace do
                             continue = true
                             blocks[j] = '0'
                             mlist[b] = mlist[b] - 1
-                            didSmth = true
                             break
                         end
                     end
@@ -247,7 +244,6 @@ while didSmth or notEnoughSpace do
                                 continue = true
                                 blocks[j] = '0'
                                 mlist[b] = mlist[b] - 1
-                                didSmth = true
                             end
                             break
                         end

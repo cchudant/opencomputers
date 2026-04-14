@@ -245,7 +245,7 @@ while didSmth or notEnoughSpace do
                         if mat(ic.getStackInInternalSlot(invI)) == b then
                             drone.select(invI)
                             moveToBlock(x + dx, y + 1, z + dz)
-                            if drone.place(sides.negy) or drone.detect(sides.negy) then
+                            if drone.detect(sides.negy) or drone.place(sides.negy)  then
                                 continue = true
                                 blocks[j] = '0'
                                 mlist[b] = mlist[b] - 1

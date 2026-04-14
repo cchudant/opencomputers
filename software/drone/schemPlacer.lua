@@ -1,8 +1,6 @@
 drone.gpsUpdatedAt = nil
 drone.gpsMsgs = {}
 
-drone.sleep(3)
-
 while not drone.gpsUpdatedAt do
     drone.setLightColor(0xFFFFFF)
     drone.setStatusText('GPS...')
@@ -10,9 +8,13 @@ while not drone.gpsUpdatedAt do
 end
 drone.setLightColor(0x00FF00)
 
-local x, y, z = 584.5, 141.5, -488.5
+local home = { 584.5, 141.5, -488.5 }
 
-drone.moveTo(x, y, z)
+drone.moveTo(home)
+
+local mall = { home[1] - 4, home[2], home[3] }
+local safe1 = { home[1] - 30, home[2], home[3] }
+local safe2 = { home[1] - 30, home[2] - 30, home[3] }
 
 while computer.energy() < computer.maxEnergy() * 0.95 do
     drone.setLightColor(0xFFA500)
@@ -30,8 +32,6 @@ local sides = {
     negx = 4,
     posx = 5,
 }
-drone.stillOffsetAllowed = .4
-drone.stillVelocityAllowed = .2
 
 local function dump()
     for i = 1, drone.tankCount() do
@@ -67,19 +67,14 @@ end
 
 local x, y, z, xlen, _, zlen, blocks, mlist = table.unpack(unser(args))
 
-drone.setStatusText(string.format('%s,%s,%s', x, y, z))
-
-local home = drone.position
-local mall = { home[1] - 3, home[2], home[3] }
-local safe1 = { home[1] - 30, home[2], home[3] }
-local safe2 = { home[1] - 30, home[2] - 30, home[3] }
+drone.setStatusText(string.format('%s\n%s', x, z))
 
 local function moveToBlock(x, y, z)
     if type(x) == 'table' then x, y, z = table.unpack(x) end
     drone.moveTo(x + .5, y + .5, z + .5)
 end
 
-local function itemToMat(el)
+local function mat(el)
     if not el then return nil end
     if not el.damage or el.damage == 0 then
         return tostring(el.id)
@@ -87,158 +82,175 @@ local function itemToMat(el)
     return el.id .. ':' .. el.damage
 end
 
+local stock = {
+    "2289",
+    "3",
+    "1",
+    "2",
+    "2055:8"
+}
+
 local lqds = {
     ['2055:10'] = "poison",
     ['2055:11'] = "water",
     ['2055:14'] = "lava",
-    ['682:1'] = "oil",
+    ['2055:15'] = "oil",
 }
 
 local got = {}
 
--- Get items.
-
-drone.moveTo(mall)
-
-local i = 1
-while true do
-    local gotAll = true
-    for k, v in pairs(mlist) do
-        if k ~= '0' and not lqds[k] and (got[k] or 0) < v then
-            gotAll = false
-            if i > 5 then
-                print('Missing: ' .. k)
-            else
-                break
-            end
+local function recompGot(m)
+    got[m] = 0
+    for i = 1, drone.inventorySize() do
+        local item = ic.getStackInInternalSlot(i)
+        if mat(item) == m then
+            got[m] = got[m] + item.size
         end
     end
-    if gotAll then
-        break
-    elseif i > 5 then
-        drone.sleep(5)
+end
+local function hasRoom(m)
+    for i = 1, drone.inventorySize() do
+        local item = ic.getStackInInternalSlot(i)
+        if mat(item) == m and item.size < item.maxSize then
+            return true
+        end
     end
+    return false
+end
 
-    local mallSlot = 1
-    local next = ic.getAllStacks(sides.posz)
-    while next do
-        local el = next()
-        if not el then break end
+-- Outer loop: dump, do groceries, then place, come back.
+local didSmth = true
+while didSmth do
+    didSmth = false
 
-        local elId = itemToMat(el)
-        local needed = (mlist[elId] or 0) - (got[elId] or 0)
+    -- Do groceries: get batch items
 
-        if elId and needed > 0 then
-            local sucked = ic.suckFromSlot(sides.posz, mallSlot, math.min(needed, 64, el.size))
-            if sucked then
-                -- we don't know how many we sucked, recompute it. (necessary for inter-drone race conditions)
-                local cnt = 0
-                for invi = 1, drone.inventorySize() do
-                    local item = ic.getStackInInternalSlot(invi)
-                    if itemToMat(item) == elId then
-                        cnt = cnt + item.size
+    drone.moveTo(mall)
+    repeat
+        local gotAll = true
+        for _, m in ipairs(stock) do
+            local n = (mlist[m] or 0) - (got[m] or 0)
+            if n > 0 and hasRoom(m) then
+                gotAll = false
+                for i = 1, ic.getInventorySize(sides.posz) do
+                    local it = ic.getStackInSlot(sides.posz, i)
+                    if m == mat(it) and ic.suckFromSlot(sides.posz, i, math.min(n, 64, it.size)) then
+                        -- we don't know how many we sucked, recompute it. (necessary for inter-drone race conditions)
+                        recompGot(m)
                     end
                 end
-                got[elId] = cnt
             end
         end
+    until gotAll
 
-        mallSlot = mallSlot + 1
+    -- Next, the other items.
+
+    drone.moveRel(1, 0, 0)
+    repeat
+        local gotAll = true
+        for _, m in ipairs(mlist) do
+            local n = (mlist[m] or 0) - (got[m] or 0)
+            if n > 0 and hasRoom(m) and not lqds[m] and m ~= '0' then
+                gotAll = false
+                for i = 1, ic.getInventorySize(sides.posz) do
+                    local it = ic.getStackInSlot(sides.posz, i)
+                    if m == mat(it) and ic.suckFromSlot(sides.posz, i, math.min(n, 64, it.size)) then
+                        -- we don't know how many we sucked, recompute it. (necessary for inter-drone race conditions)
+                        recompGot(m)
+                    end
+                end
+            end
+        end
+    until gotAll
+
+    -- Get liquids from mall.
+
+    drone.moveRel(-1, 0, 0)
+    local tSts = {} -- Tank statuses
+    for _ = 1, drone.tankCount() do
+        table.insert(tSts, { lqd = nil, cnt = 0 })
     end
 
-    i = i + 1
-end
+    for _ in 1, 4 do
+        drone.moveRel(1, 0, 0)
+        local flds = tank_controller.getFluidInTank(sides.posz)
 
-local tSts = {}
-for _ = 1, drone.tankCount() do
-    table.insert(tSts, { lqd = nil, cnt = 0 })
-end
-
-drone.moveRel(-2, 0, 0)
-
-for _ = 0, 3 do
-    local flds = tank_controller.getFluidInTank(sides.posz)
-    if #flds > 0 then
-        local el = flds[1]
-        for mat, lqdN in pairs(lqds) do
-            if lqdN == el.name then
-                local need = (mlist[mat] or 0) - (got[mat] or 0)
+        for m, n in pairs(lqds) do
+            if flds and flds[1] and n == flds[1].name then
                 -- find empty/tank with same fluid
                 for tI, sts in ipairs(tSts) do
-                    if need <= 0 then break end
-                    if not sts.lqd or sts.lqd == lqdN then
+                    if not sts.lqd or sts.lqd == n then
                         drone.selectTank(tI)
-                        local tkn = math.min(math.floor(drone.tankSpace(tI) / 1000), need)
+                        local tkn = math.min(math.floor(drone.tankSpace(tI) / 1000), (mlist[m] or 0) - (got[m] or 0))
                         drone.drain(sides.posz, tkn * 1000)
-                        need = need - tkn
-                        sts.lqd = lqdN
+                        got[m] = (got[m] or 0) + tkn
+                        sts.lqd = n
                         sts.cnt = sts.cnt + tkn * 1000
                     end
                 end
             end
         end
     end
-    drone.moveRel(-1, 0, 0)
-end
 
-local acl = drone.getAcceleration()
-drone.setAcceleration(999999)
-drone.moveTo(safe1)
-drone.moveTo(safe2)
-drone.setAcceleration(acl)
+    -- We're ready!
 
-moveToBlock(x, y + 16, z)
+    -- Go to location.
 
-local j = 1
-for dx = 0, xlen - 1 do
-    for dz = 0, zlen - 1 do
-        local b = blocks[j]
+    drone.moveTo(safe1)
+    drone.moveTo(safe2)
 
-        if b ~= '0' then
-            moveToBlock(x + dx, y + 1, z + dz)
+    moveToBlock(x, y + 16, z)
 
-            local placed = false
+    local placeLqds = false -- place liquids after blocks
+    local continue
+    repeat
+        continue = false
+        local j = 1
+        for dx = 0, xlen - 1 do
+            for dz = 0, zlen - 1 do
+                local b = blocks[j]
 
-            if drone.detect(sides.negy) then
-                placed = true
-            elseif lqds[b] then
-                for tankI, sts in ipairs(tSts) do
-                    if sts.lqd == lqds[b] and sts.cnt > 0 then
-                        drone.selectTank(tankI)
-                        drone.fill(sides.negy, 1000)
-                        sts.cnt = sts.cnt - 1000
-                        placed = true
-                        break
-                    end
-                end
-            else
-                for invI = 1, drone.inventorySize() do
-                    if itemToMat(ic.getStackInInternalSlot(invI)) == b then
-                        drone.select(invI)
-                        local res, err = drone.place(sides.negy)
-                        if not res then
-                            print('Could not place', err)
+                if b ~= '0' and lqds[b] and placeLqds then
+                    for tankI, sts in ipairs(tSts) do
+                        if sts.lqd == lqds[b] and sts.cnt > 0 then
+                            drone.selectTank(tankI)
+                            moveToBlock(x + dx, y + 1, z + dz)
+                            drone.fill(sides.negy, 1000)
+                            sts.cnt = sts.cnt - 1000
+                            continue = true
+                            blocks[j] = '0'
+                            didSmth = true
+                            break
                         end
-                        placed = true
-                        break
+                    end
+                elseif b ~= '0' then
+                    for invI = 1, drone.inventorySize() do
+                        if mat(ic.getStackInInternalSlot(invI)) == b then
+                            drone.select(invI)
+                            moveToBlock(x + dx, y + 1, z + dz)
+                            if drone.place(sides.negy) or drone.detect(sides.negy) then
+                                continue = true
+                                blocks[j] = '0'
+                                didSmth = true
+                            end
+                            break
+                        end
                     end
                 end
-            end
-
-            if not placed then
-                print('Not placed: missing ' .. b)
+                j = j + 1
             end
         end
-        j = j + 1
-    end
-end
+        if not placeLqds and not continue then
+            placeLqds = true
+            continue = true
+        end
+    until not continue -- nothing could be placed
 
-drone.setAcceleration(999999)
-drone.moveRel(0, 5, 0)
-drone.moveTo(safe2)
-drone.moveTo(safe1)
-drone.setAcceleration(acl)
-drone.moveTo(home)
-dump()
+    drone.moveRel(0, 5, 0)
+    drone.moveTo(safe2)
+    drone.moveTo(safe1)
+    drone.moveTo(home)
+    dump()
+end
 
 modem.broadcast(732, 'schemPlacerFinished', x, y, z)

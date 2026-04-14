@@ -15,11 +15,12 @@ local zlength = tag:getValue()['Length']:getValue()
 
 local tileEntities = tag:getValue()['TileEntities']:getValue()
 local tileEntityMap = {}
-for _, el in ipairs(tileEntities) do
+for i, el in ipairs(tileEntities) do
     local id = el:getValue().id:getValue()
     local x, y, z = el:getValue().x:getValue(), el:getValue().y:getValue(), el:getValue().z:getValue()
     if id ~= 'GT_TileEntity_Ores' then
         print('Unsupported tileentity: ' .. id)
+        print(el, i)
     else
         local m = el:getValue().m:getValue()
         tileEntityMap[string.format('%s,%s,%s', x, y, z)] = m

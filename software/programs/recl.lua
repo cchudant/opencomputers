@@ -48,6 +48,9 @@ local substitutions = {
     -- cave vines
     ['2480'] = '0',
     ['2480:1'] = '0',
+    ['2479'] = '0',
+    -- glow lichen
+    ['2478'] = '0',
     -- etfuturem deepslate redstone ore to gt
     ['2303'] = '2711:810'
 }

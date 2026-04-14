@@ -183,8 +183,7 @@ while notEnoughSpace do
         print(#flds, flds[1])
 
         for m, n in pairs(lqds) do
-            if flds and flds[1] and n == flds[1].name then
-                print('needed', m, n, (mlist[m] or 0) - (got[m] or 0))
+            if flds and flds[1] and n == flds[1].name and (mlist[m] or 0) - (got[m] or 0) > 0 then
                 -- find empty/tank with same fluid
                 for tI, sts in ipairs(tSts) do
                     if not sts.lqd or sts.lqd == n then

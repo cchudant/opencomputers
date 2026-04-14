@@ -190,6 +190,7 @@ repeat
                         drone.selectTank(tI)
                         local tkn = math.min(math.floor(drone.tankSpace(tI) / 1000), need)
                         drone.drain(sides.posz, tkn * 1000)
+                        print('drain', tI, tkn, m, sts.lqd, sts.cnt, need)
                         got[m] = (got[m] or 0) + tkn
                         sts.lqd = n
                         sts.cnt = sts.cnt + tkn * 1000
@@ -225,6 +226,7 @@ repeat
                 if b ~= '0' and lqds[b] and placeLqds then
                     for tankI, sts in ipairs(tSts) do
                         if sts.lqd == lqds[b] and sts.cnt > 0 then
+                            print(tankI, sts.lqd, sts.cnt)
                             drone.selectTank(tankI)
                             drone.moveTo(x + .5 + dx, y + 1.5, z + .5 + dz)
                             drone.fill(sides.negy, 1000)
@@ -235,19 +237,19 @@ repeat
                             break
                         end
                     end
-                elseif b ~= '0' then
-                    for invI = 1, drone.inventorySize() do
-                        if mat(ic.getStackInInternalSlot(invI)) == b then
-                            drone.select(invI)
-                            drone.moveTo(x + .5 + dx, y + 1.5, z + .5 + dz)
-                            if drone.detect(sides.negy) or drone.place(sides.negy) then
-                                continue = true
-                                blocks[j] = '0'
-                                mlist[b] = mlist[b] - 1
-                            end
-                            break
-                        end
-                    end
+                elseif b ~= '0' and not lqds[b] then
+                    -- for invI = 1, drone.inventorySize() do
+                    --     if mat(ic.getStackInInternalSlot(invI)) == b then
+                    --         drone.select(invI)
+                    --         drone.moveTo(x + .5 + dx, y + 1.5, z + .5 + dz)
+                    --         if drone.detect(sides.negy) or drone.place(sides.negy) then
+                    --             continue = true
+                    --             blocks[j] = '0'
+                    --             mlist[b] = mlist[b] - 1
+                    --         end
+                    --         break
+                    --     end
+                    -- end
                 end
                 j = j + 1
             end

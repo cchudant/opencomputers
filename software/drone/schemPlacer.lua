@@ -111,15 +111,14 @@ local iter = 1
 local notEnoughSpace = false
 while notEnoughSpace do
     notEnoughSpace = false
-
-    drone.setStatusText(string.format('%s,%s\ni=%s', x, z, iter))
-
     while computer.energy() < computer.maxEnergy() * 0.95 do
         drone.setLightColor(0xFFA500)
         drone.setStatusText('CHARGE')
         drone.sleep(1)
     end
     drone.setLightColor(0x00FF00)
+
+    drone.setStatusText(string.format('%s,%s\ni=%s', x, z, iter))
 
     -- Do groceries: get batch items
 

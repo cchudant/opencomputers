@@ -60,13 +60,6 @@ end
 
 local x, y, z, xlen, _, zlen, blocks, mlist = table.unpack(unser(args))
 
-drone.setStatusText(string.format('%s\n%s', x, z))
-
-local function moveToBlock(x, y, z)
-    if type(x) == 'table' then x, y, z = table.unpack(x) end
-    drone.moveTo(x + .5, y + .5, z + .5)
-end
-
 local function mat(el)
     if not el then return nil end
     if not el.damage or el.damage == 0 then
@@ -111,12 +104,15 @@ local function hasRoom(m)
     return false
 end
 
+local iter = 1
 -- Outer loop: dump, do groceries, then place, come back.
 local didSmth = true
 local notEnoughSpace = false
 while didSmth or notEnoughSpace do
     didSmth = false
     notEnoughSpace = false
+
+    drone.setStatusText(string.format('%s,%s\ni=%s', x, z, iter))
 
     while computer.energy() < computer.maxEnergy() * 0.95 do
         drone.setLightColor(0xFFA500)
@@ -214,7 +210,7 @@ while didSmth or notEnoughSpace do
     drone.setAcceleration(9999999)
     drone.moveTo(safe1)
     drone.moveTo(safe2)
-    moveToBlock(x, y + 16, z)
+    drone.moveTo(x + .5, y + 16.5, z + .5)
     drone.setAcceleration(acr)
 
     local placeLqds = false -- place liquids after blocks
@@ -230,7 +226,7 @@ while didSmth or notEnoughSpace do
                     for tankI, sts in ipairs(tSts) do
                         if sts.lqd == lqds[b] and sts.cnt > 0 then
                             drone.selectTank(tankI)
-                            moveToBlock(x + dx, y + 1, z + dz)
+                            drone.moveTo(x + .5 + dx, y + 1.5, z + .5 + dz)
                             drone.fill(sides.negy, 1000)
                             sts.cnt = sts.cnt - 1000
                             continue = true
@@ -244,8 +240,8 @@ while didSmth or notEnoughSpace do
                     for invI = 1, drone.inventorySize() do
                         if mat(ic.getStackInInternalSlot(invI)) == b then
                             drone.select(invI)
-                            moveToBlock(x + dx, y + 1, z + dz)
-                            if drone.detect(sides.negy) or drone.place(sides.negy)  then
+                            drone.moveTo(x + .5 + dx, y + 1.5, z + .5 + dz)
+                            if drone.detect(sides.negy) or drone.place(sides.negy) then
                                 continue = true
                                 blocks[j] = '0'
                                 mlist[b] = mlist[b] - 1
@@ -272,6 +268,7 @@ while didSmth or notEnoughSpace do
     drone.moveTo(home)
     dump()
     got = {}
+    iter = iter + 1
 end
 
 modem.broadcast(732, 'schemPlacerFinished', x, y, z)

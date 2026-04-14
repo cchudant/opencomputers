@@ -53,7 +53,9 @@ local substitutions = {
     -- glow lichen
     ['2478'] = '0',
     -- etfuturem deepslate redstone ore to gt
-    ['2303'] = '2711:810'
+    ['2303'] = '2711:810',
+    -- thaumcraft node to white hempcrete (sentinel)
+    ['411'] = '2055:0',
 }
 
 if action == 'checkMatList' then

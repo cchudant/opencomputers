@@ -111,7 +111,7 @@ end
 local function hasRoom(m)
     for i = 1, drone.inventorySize() do
         local item = ic.getStackInInternalSlot(i)
-        if mat(item) == m and item.size < item.maxSize then
+        if not item or (mat(item) == m and item.size < item.maxSize) then
             return true
         end
     end
@@ -171,8 +171,8 @@ while didSmth do
         table.insert(tSts, { lqd = nil, cnt = 0 })
     end
 
-    for _ in 1, 4 do
-        drone.moveRel(1, 0, 0)
+    for _ = 1, 4 do
+        drone.moveRel(-1, 0, 0)
         local flds = tank_controller.getFluidInTank(sides.posz)
 
         for m, n in pairs(lqds) do

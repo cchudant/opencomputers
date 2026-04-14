@@ -189,8 +189,8 @@ repeat
                     if (not sts.lqd or sts.lqd == n) and need > 0 then
                         drone.selectTank(tI)
                         local tkn = math.min(math.floor(drone.tankSpace(tI) / 1000), need)
-                        drone.drain(sides.posz, tkn * 1000)
-                        print('drain', tI, tkn, m, n, sts.lqd, sts.cnt, need)
+                        local res = drone.drain(sides.posz, tkn * 1000)
+                        print('drain', tI, tkn, m, n, sts.lqd, sts.cnt, need, res)
                         got[m] = (got[m] or 0) + tkn
                         sts.lqd = n
                         sts.cnt = sts.cnt + tkn * 1000
@@ -226,10 +226,10 @@ repeat
                 if b ~= '0' and lqds[b] and placeLqds then
                     for tankI, sts in ipairs(tSts) do
                         if sts.lqd == lqds[b] and sts.cnt > 0 then
-                            print(tankI, sts.lqd, sts.cnt)
                             drone.selectTank(tankI)
                             drone.moveTo(x + .5 + dx, y + 1.5, z + .5 + dz)
-                            drone.fill(sides.negy, 1000)
+                            local res = drone.fill(sides.negy, 1000)
+                            print(tankI, sts.lqd, sts.cnt, res)
                             sts.cnt = sts.cnt - 1000
                             continue = true
                             blocks[j] = '0'

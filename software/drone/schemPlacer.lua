@@ -1,6 +1,5 @@
 drone.gpsUpdatedAt = nil
 drone.gpsMsgs = {}
-drone.setAcceleration(9999999)
 
 while not drone.gpsUpdatedAt do
     drone.setLightColor(0xFFFFFF)
@@ -211,10 +210,12 @@ while didSmth or notEnoughSpace do
 
     -- Go to location.
 
+    local acr = drone.getAcceleration()
+    drone.setAcceleration(9999999)
     drone.moveTo(safe1)
     drone.moveTo(safe2)
-
     moveToBlock(x, y + 16, z)
+    drone.setAcceleration(acr)
 
     local placeLqds = false -- place liquids after blocks
     local continue
@@ -263,9 +264,11 @@ while didSmth or notEnoughSpace do
         end
     until not continue -- nothing could be placed
 
+    drone.setAcceleration(9999999)
     drone.moveRel(0, 5, 0)
     drone.moveTo(safe2)
     drone.moveTo(safe1)
+    drone.setAcceleration(acr)
     drone.moveTo(home)
     dump()
     got = {}

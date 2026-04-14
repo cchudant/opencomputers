@@ -17,13 +17,6 @@ local mall = { home[1] - 4, home[2], home[3] }
 local safe1 = { home[1] - 30, home[2], home[3] }
 local safe2 = { home[1] - 30, home[2] - 30, home[3] }
 
-while computer.energy() < computer.maxEnergy() * 0.95 do
-    drone.setLightColor(0xFFA500)
-    drone.setStatusText('CHARGE')
-    drone.sleep(1)
-end
-drone.setLightColor(0x00FF00)
-
 local ic = inventory_controller
 local sides = {
     negy = 0,
@@ -43,7 +36,7 @@ local function dump()
         end
     end
     for invi = 1, drone.inventorySize() do
-        if drone.count(invi) then
+        if drone.count(invi) > 0 then
             drone.select(invi)
             drone.drop(sides.posz, 64)
         end
@@ -126,11 +119,19 @@ while didSmth or notEnoughSpace do
     didSmth = false
     notEnoughSpace = false
 
+    while computer.energy() < computer.maxEnergy() * 0.95 do
+        drone.setLightColor(0xFFA500)
+        drone.setStatusText('CHARGE')
+        drone.sleep(1)
+    end
+    drone.setLightColor(0x00FF00)
+
     -- Do groceries: get batch items
 
     drone.moveTo(mall)
+    local gotAll
     repeat
-        local gotAll = true
+        gotAll = true
         for _, m in ipairs(stock) do
             local n = (mlist[m] or 0) - (got[m] or 0)
             if n > 0 and not lqds[m] and m ~= '0' then
@@ -154,8 +155,8 @@ while didSmth or notEnoughSpace do
 
     drone.moveRel(1, 0, 0)
     repeat
-        local gotAll = true
-        for _, m in ipairs(mlist) do
+        gotAll = true
+        for m, _ in pairs(mlist) do
             local n = (mlist[m] or 0) - (got[m] or 0)
             if n > 0 and not lqds[m] and m ~= '0' then
                 if not hasRoom(m) then

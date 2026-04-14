@@ -132,7 +132,7 @@ else
                 chunk.cz * schematic.chunkSizeZ + schemZ,
                 chunk.lenx, chunk.leny, chunk.lenz, chunk.blocks, chunk.materials
 
-            if not doneChunks[string.format('%s,%s,%s', x, y, z)] then
+            if x == 656 and z == -752 and not doneChunks[string.format('%s,%s,%s', x, y, z)] then
                 while #drones < 1 do
                     print('Checking for drones...')
                     drones = droneControl.getWaitingDrones( --[[timeout sec]] 5, --[[num]] nil, --[[maxDistance]] 2.5)

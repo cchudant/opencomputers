@@ -186,11 +186,11 @@ repeat
                 -- find empty/tank with same fluid
                 for tI, sts in ipairs(tSts) do
                     local need = (mlist[m] or 0) - (got[m] or 0)
-                    if not sts.lqd or sts.lqd == n and need > 0 then
+                    if (not sts.lqd or sts.lqd == n) and need > 0 then
                         drone.selectTank(tI)
                         local tkn = math.min(math.floor(drone.tankSpace(tI) / 1000), need)
                         drone.drain(sides.posz, tkn * 1000)
-                        print('drain', tI, tkn, m, sts.lqd, sts.cnt, need)
+                        print('drain', tI, tkn, m, n, sts.lqd, sts.cnt, need)
                         got[m] = (got[m] or 0) + tkn
                         sts.lqd = n
                         sts.cnt = sts.cnt + tkn * 1000

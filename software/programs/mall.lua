@@ -83,6 +83,10 @@ end
 local function check_me(slot)
     local db, dbslot = masterdbslot(slot)
     local idnum, damagenum = attr(db, dbslot)
+    print(idnum, damagenum)
+    if damagenum==nil then
+        damagenum=0
+    end
     local invcheck = me.getItemsInNetwork({ id = idnum, damage = damagenum })
     if #invcheck ~= 0 then
         if invcheck[1].size < 1000 then

@@ -132,6 +132,7 @@ while didSmth do
             local n = (mlist[m] or 0) - (got[m] or 0)
             if n > 0 and hasRoom(m) then
                 gotAll = false
+                print('1) need ', n, m)
                 for i = 1, ic.getInventorySize(sides.posz) do
                     local it = ic.getStackInSlot(sides.posz, i)
                     if m == mat(it) and ic.suckFromSlot(sides.posz, i, math.min(n, 64, it.size)) then
@@ -151,6 +152,7 @@ while didSmth do
         for _, m in ipairs(mlist) do
             local n = (mlist[m] or 0) - (got[m] or 0)
             if n > 0 and hasRoom(m) and not lqds[m] and m ~= '0' then
+                print('2) need ', n, m)
                 gotAll = false
                 for i = 1, ic.getInventorySize(sides.posz) do
                     local it = ic.getStackInSlot(sides.posz, i)

@@ -1,7 +1,7 @@
 drone.gpsUpdatedAt = nil
 drone.gpsMsgs = {}
-drone.stillOffsetAllowed = 0.3
-drone.stillVelocityAllowed = 0.05
+-- drone.stillOffsetAllowed = 0.3
+-- drone.stillVelocityAllowed = 0.05
 
 while not drone.gpsUpdatedAt do
     drone.setLightColor(0xFFFFFF)

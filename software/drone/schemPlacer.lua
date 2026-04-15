@@ -182,15 +182,13 @@ repeat
 
         for m, n in pairs(lqds) do
             if flds and flds[1] and n == flds[1].name then
-                print(flds[1].name)
                 -- find empty/tank with same fluid
                 for tI, sts in ipairs(tSts) do
                     local need = (mlist[m] or 0) - (got[m] or 0)
                     if (not sts.lqd or sts.lqd == n) and need > 0 then
                         drone.selectTank(tI)
                         local tkn = math.min(math.floor(drone.tankSpace(tI) / 1000), need)
-                        local res, err = drone.drain(sides.posz, tkn * 1000)
-                        print('drain', tI, tkn, m, n, sts.lqd, sts.cnt, need, res, err, math.floor(drone.tankSpace(tI) / 1000), need)
+                        drone.drain(sides.posz, tkn * 1000)
                         got[m] = (got[m] or 0) + tkn
                         sts.lqd = n
                         sts.cnt = (sts.cnt or 0) + tkn * 1000
@@ -229,8 +227,7 @@ repeat
                         if sts.lqd == lqds[b] and sts.cnt > 0 then
                             drone.selectTank(tankI)
                             drone.moveTo(x + .5 + dx, y + 1.5, z + .5 + dz)
-                            local res, err = drone.fill(sides.negy, 1000)
-                            print(tankI, sts.lqd, sts.cnt, res, err)
+                            drone.fill(sides.negy, 1000)
                             sts.cnt = sts.cnt - 1000
                             continue = true
                             blocks[j] = '0'

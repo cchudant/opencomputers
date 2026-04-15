@@ -171,14 +171,13 @@ repeat
 
     -- Get liquids from mall.
 
-    drone.moveRel(-1, 0, 0)
+    drone.moveRel(-2, 0, 0)
     local tSts = {} -- Tank statuses
     for _ = 1, drone.tankCount() do
         table.insert(tSts, { lqd = nil, cnt = 0 })
     end
 
     for _ = 1, 4 do
-        drone.moveRel(-1, 0, 0)
         local flds = tank_controller.getFluidInTank(sides.posz)
 
         for m, n in pairs(lqds) do
@@ -189,8 +188,8 @@ repeat
                     if (not sts.lqd or sts.lqd == n) and need > 0 then
                         drone.selectTank(tI)
                         local tkn = math.min(math.floor(drone.tankSpace(tI) / 1000), need)
-                        local res = drone.drain(sides.posz, tkn * 1000)
-                        print('drain', tI, tkn, m, n, sts.lqd, sts.cnt, need, res, math.floor(drone.tankSpace(tI) / 1000), need)
+                        local res, err = drone.drain(sides.posz, tkn * 1000)
+                        print('drain', tI, tkn, m, n, sts.lqd, sts.cnt, need, res, err, math.floor(drone.tankSpace(tI) / 1000), need)
                         got[m] = (got[m] or 0) + tkn
                         sts.lqd = n
                         sts.cnt = sts.cnt + tkn * 1000
@@ -201,6 +200,7 @@ repeat
                 end
             end
         end
+        drone.moveRel(-1, 0, 0)
     end
 
     -- We're ready!
@@ -232,8 +232,8 @@ repeat
                         if sts.lqd == lqds[b] and sts.cnt > 0 then
                             drone.selectTank(tankI)
                             drone.moveTo(x + .5 + dx, y + 1.5, z + .5 + dz)
-                            local res = drone.fill(sides.negy, 1000)
-                            print(tankI, sts.lqd, sts.cnt, res)
+                            local res, err = drone.fill(sides.negy, 1000)
+                            print(tankI, sts.lqd, sts.cnt, res, err)
                             sts.cnt = sts.cnt - 1000
                             continue = true
                             blocks[j] = '0'

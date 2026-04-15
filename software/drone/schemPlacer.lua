@@ -207,7 +207,9 @@ repeat
     -- We're ready!
 
     for i = 1, drone.tankCount() do
-        print("tank", i, drone.tankLevel(i))
+        -- print("tank", i, drone.tankLevel(i))
+        local tankinfo = tank_controller.getFluidInInternalTank(i)
+        print(tankinfo.name, tankinfo.amount)
     end
 
     -- Go to location.

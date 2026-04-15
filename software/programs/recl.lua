@@ -63,6 +63,9 @@ local substitutions = {
     ['411'] = '2055', -- thaumcraft node
     ['52'] = '2055', -- mob spawner
     ['2711'] = '2055', -- buggy gt ore?
+    ['54:3'] = '2055', -- chest
+    ['54:5'] = '2055', -- chest
+    ['50:3'] = '2055', -- torch
 }
 
 if action == 'checkMatList' then

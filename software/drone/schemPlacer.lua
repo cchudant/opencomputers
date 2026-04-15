@@ -182,6 +182,7 @@ repeat
 
         for m, n in pairs(lqds) do
             if flds and flds[1] and n == flds[1].name then
+                print(flds[1].name)
                 -- find empty/tank with same fluid
                 for tI, sts in ipairs(tSts) do
                     local need = (mlist[m] or 0) - (got[m] or 0)

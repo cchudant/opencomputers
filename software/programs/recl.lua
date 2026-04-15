@@ -67,6 +67,7 @@ local substitutions = {
     ['54:3'] = '2055',       -- chest
     ['54:5'] = '2055',       -- chest
     ['50:3'] = '2055',       -- torch
+    ['50:2'] = '2055',       -- torch
 }
 
 if action == 'checkMatList' then

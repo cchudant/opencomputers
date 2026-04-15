@@ -1,6 +1,6 @@
 local nbt = require('tools.nbt')
 
-local file = io.open('./tools/reclamation5_y15.nbt') --[[@as file*]]
+local file = io.open('./tools/recl5we.nbt') --[[@as file*]]
 local content = file:read('a')
 file:close()
 local tag = nbt.decode(content, 'tag') --[[@as table]]
@@ -26,6 +26,9 @@ for i, el in ipairs(tileEntities) do
         tileEntityMap[string.format('%s,%s,%s', x, y, z)] = m
     end
 end
+
+
+sdssda()
 
 local chunkSizeX, chunkSizeY, chunkSizeZ = 8, 1, 16
 

@@ -236,18 +236,18 @@ repeat
                         end
                     end
                 elseif b ~= '0' and not lqds[b] then
-                    -- for invI = 1, drone.inventorySize() do
-                    --     if mat(ic.getStackInInternalSlot(invI)) == b then
-                    --         drone.select(invI)
-                    --         drone.moveTo(x + .5 + dx, y + 1.5, z + .5 + dz)
-                    --         if drone.detect(sides.negy) or drone.place(sides.negy) then
-                    --             continue = true
-                    --             blocks[j] = '0'
-                    --             mlist[b] = mlist[b] - 1
-                    --         end
-                    --         break
-                    --     end
-                    -- end
+                    for invI = 1, drone.inventorySize() do
+                        if mat(ic.getStackInInternalSlot(invI)) == b then
+                            drone.select(invI)
+                            drone.moveTo(x + .5 + dx, y + 1.5, z + .5 + dz)
+                            if drone.detect(sides.negy) or drone.place(sides.negy) then
+                                continue = true
+                                blocks[j] = '0'
+                                mlist[b] = mlist[b] - 1
+                            end
+                            break
+                        end
+                    end
                 end
                 j = j + 1
             end

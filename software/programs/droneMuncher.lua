@@ -2,8 +2,11 @@ local droneControl = require('.software.apis.droneControl')
 local component = require('component')
 local sides = require('sides')
 local robot = require('robot')
+local shell = require('shell')
 local inv = component.inventory_controller
 local cr = component.crafting
+
+local args, ops = shell.parse(...)
 
 local eepromItemName = 'OpenComputers:eeprom'
 local screnchItemName = 'OpenComputers:wrench'
@@ -12,7 +15,7 @@ local function showUsage()
     print('droneMuncher')
     print('Usage:')
     print('* droneMuncher munch - will order every waiting drone to get munched.')
-    print('* droneMuncher unmunch [amount] - will deploy drones')
+    print('* droneMuncher unmunch [amount] [--flash] - will deploy drones')
 end
 
 local slotGoodEeprom = 16
@@ -71,9 +74,7 @@ local function deploy()
     droneControl.run(nil, '/software/drone/unmunch.lua')
 end
 
-local command, arg1 = ...
-
-if command == 'munch' then
+if args[1] == 'munch' then
     component.getPrimary('modem').setStrength(20)
     robot.select(slotScrench)
 
@@ -101,13 +102,15 @@ if command == 'munch' then
     inv.equip()
     robot.select(1)
     print('Done! Drones munched: ' .. munched)
-elseif command == 'unmunch' then
+elseif args[1] == 'unmunch' then
     -- Messages only travel two blocks.
     component.getPrimary('modem').setStrength(2)
 
+    local flash = ops['flash']
+
     local amount
-    if arg1 then
-        amount = tonumber(arg1)
+    if args[2] then
+        amount = tonumber(args[2])
         if not amount then
             showUsage()
             return
@@ -117,18 +120,23 @@ elseif command == 'unmunch' then
     local deployed = 0
 
     while (not amount or deployed < amount) and inv.getStackInSlot(sides.down, 1) do
-        local goodEeproms = inv.getStackInInternalSlot(slotGoodEeprom)
-        if not goodEeproms or goodEeproms.name ~= eepromItemName then
-            robot.select(slotGoodEeprom)
-            print("Please put the eeprom to flash in the selected slot. (slot " .. slotGoodEeprom .. ")")
-            os.exit(1)
-        end
+        if flash then
+            local goodEeproms = inv.getStackInInternalSlot(slotGoodEeprom)
+            if not goodEeproms or goodEeproms.name ~= eepromItemName then
+                robot.select(slotGoodEeprom)
+                print("Please put the eeprom to flash in the selected slot. (slot " .. slotGoodEeprom .. ")")
+                os.exit(1)
+            end
 
-        if goodEeproms.size < 2 then
-            copy_eeprom()
-        end
+            if goodEeproms.size < 2 then
+                copy_eeprom()
+            end
 
-        add_eeprom()
+            add_eeprom()
+        else
+            robot.select(1)
+            inv.suckFromSlot(sides.down, 1, 1)
+        end
         deploy()
 
         deployed = deployed + 1

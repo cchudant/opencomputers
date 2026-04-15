@@ -31,7 +31,7 @@ local sides = {
 local function dump()
     for i = 1, drone.tankCount() do
         local tankinfo = tank_controller.getFluidInInternalTank(i)
-        if tankinfo.amount > 0 then
+        if tankinfo.name ~= nil then
             drone.selectTank(i)
             drone.fill(sides.posz, tankinfo.amount)
         end

@@ -20,7 +20,7 @@ end
 local action = 'deploy'
 
 local schemFilePath = '/home/reclamation5_y12.data'
-local schemX, schemY, schemZ = 192, 11, -880
+local schemX, schemY, schemZ = 192, 12, -880
 
 if type(ops['checkMatList']) == 'boolean' then
     action = 'checkMatList'

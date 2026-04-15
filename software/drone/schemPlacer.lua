@@ -193,7 +193,7 @@ repeat
                         print('drain', tI, tkn, m, n, sts.lqd, sts.cnt, need, res, err, math.floor(drone.tankSpace(tI) / 1000), need)
                         got[m] = (got[m] or 0) + tkn
                         sts.lqd = n
-                        sts.cnt = sts.cnt + tkn * 1000
+                        sts.cnt = (sts.cnt or 0) + tkn * 1000
                     end
                 end
                 if (mlist[m] or 0) - (got[m] or 0) > 0 then

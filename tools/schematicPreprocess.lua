@@ -1,6 +1,6 @@
 local nbt = require('tools.nbt')
 
-local file = io.open('./tools/recl5we.nbt') --[[@as file*]]
+local file = io.open('./tools/reclamation5_y20.nbt') --[[@as file*]]
 local content = file:read('a')
 file:close()
 local tag = nbt.decode(content, 'tag') --[[@as table]]
@@ -27,9 +27,6 @@ for i, el in ipairs(tileEntities) do
     end
 end
 
-
-sdssda()
-
 local chunkSizeX, chunkSizeY, chunkSizeZ = 8, 1, 16
 
 local function toUnsignedByte(b)
@@ -42,7 +39,7 @@ end
 local palette = {}
 local materialList = {}
 
-local outFile = io.open('./tools/reclamation5_y15.data', 'w+b') --[[@as file*]]
+local outFile = io.open('./tools/reclamation5_y19.data', 'w+b') --[[@as file*]]
 
 outFile:write(string.pack('>I4>I4>I4', xlength, ylength, zlength))
 

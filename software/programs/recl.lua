@@ -60,12 +60,12 @@ local substitutions = {
     ['1096:3'] = '2711:501', -- emerald
     ['1096:4'] = '2711:526', -- lapis
     -- white hempcrete (sentinel)
-    ['411'] = '2055', -- thaumcraft node
-    ['52'] = '2055', -- mob spawner
-    ['2711'] = '2055', -- buggy gt ore?
-    ['54:3'] = '2055', -- chest
-    ['54:5'] = '2055', -- chest
-    ['50:3'] = '2055', -- torch
+    ['411'] = '2055',        -- thaumcraft node
+    ['52'] = '2055',         -- mob spawner
+    ['2711'] = '2055',       -- buggy gt ore?
+    ['54:3'] = '2055',       -- chest
+    ['54:5'] = '2055',       -- chest
+    ['50:3'] = '2055',       -- torch
 }
 
 if action == 'checkMatList' then
@@ -165,6 +165,8 @@ else
         print('All done.')
 
         schem:close()
+
+        while true do os.sleep(1000000) end
     end
 
     local function receiveDoneMessages()

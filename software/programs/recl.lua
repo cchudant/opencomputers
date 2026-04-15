@@ -19,8 +19,8 @@ end
 
 local action = 'deploy'
 
-local schemFilePath = '/home/reclamation5_y12.data'
-local schemX, schemY, schemZ = 192, 12, -880
+local schemFilePath = '/home/reclamation5_y13.data'
+local schemX, schemY, schemZ = 192, 13, -880
 
 if type(ops['checkMatList']) == 'boolean' then
     action = 'checkMatList'
@@ -57,7 +57,7 @@ local substitutions = {
     ['2303'] = '2711:810',
     -- railcraft dark ores to gt
     ['1096:2'] = '2711:500', -- diamond
-    ['1096:3'] = '2055', -- emerald (temporary!)
+    ['1096:3'] = '2711:501', -- emerald
     ['1096:4'] = '2711:526', -- lapis
     -- white hempcrete (sentinel)
     ['411'] = '2055', -- thaumcraft node

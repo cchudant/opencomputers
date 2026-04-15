@@ -1,4 +1,6 @@
 *.data
 *.nbt
 *.schematic
+*.log
+tools/test.sh
 .DS_Store

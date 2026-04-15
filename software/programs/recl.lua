@@ -50,12 +50,19 @@ local substitutions = {
     ['2480'] = '0',
     ['2480:1'] = '0',
     ['2479'] = '0',
+    ['2479:1'] = '0',
     -- glow lichen
     ['2478'] = '0',
     -- etfuturem deepslate redstone ore to gt
     ['2303'] = '2711:810',
-    -- thaumcraft node to white hempcrete (sentinel)
-    ['411'] = '2055',
+    -- railcraft dark ores to gt
+    ['1096:2'] = '2711:500', -- diamond
+    ['1096:3'] = '2055', -- emerald (temporary!)
+    ['1096:4'] = '2711:526', -- lapis
+    -- white hempcrete (sentinel)
+    ['411'] = '2055', -- thaumcraft node
+    ['52'] = '2055', -- mob spawner
+    ['2711'] = '2055', -- buggy gt ore?
 }
 
 if action == 'checkMatList' then

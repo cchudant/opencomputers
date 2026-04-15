@@ -190,7 +190,7 @@ repeat
                         drone.selectTank(tI)
                         local tkn = math.min(math.floor(drone.tankSpace(tI) / 1000), need)
                         local res = drone.drain(sides.posz, tkn * 1000)
-                        print('drain', tI, tkn, m, n, sts.lqd, sts.cnt, need, res)
+                        print('drain', tI, tkn, m, n, sts.lqd, sts.cnt, need, res, math.floor(drone.tankSpace(tI) / 1000), need)
                         got[m] = (got[m] or 0) + tkn
                         sts.lqd = n
                         sts.cnt = sts.cnt + tkn * 1000

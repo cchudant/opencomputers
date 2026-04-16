@@ -75,11 +75,13 @@ local substitutions = {
     ['2711'] = '2055',       -- buggy gt ore?
     ['54:2'] = '2055',       -- chest
     ['54:3'] = '2055',       -- chest
+    ['54:4'] = '2055',       -- chest
     ['54:5'] = '2055',       -- chest
     ['50:1'] = '2055',       -- torch
     ['50:2'] = '2055',       -- torch
     ['50:3'] = '2055',       -- torch
     ['50:4'] = '2055',       -- torch
+    ['880:15'] = '2055',     -- roots from biomes o plenty
 }
 
 if action == 'checkMatList' then

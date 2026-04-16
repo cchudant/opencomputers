@@ -59,6 +59,8 @@ local substitutions = {
     ['2479:1'] = '0',
     -- glow lichen
     ['2478'] = '0',
+    -- amethyst bud (will grow back)
+    ['2298:9'] = '0',
     -- etfuturem deepslate redstone ore to gt
     ['2303'] = '2711:810',
     -- railcraft dark ores to gt

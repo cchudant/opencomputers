@@ -13,14 +13,20 @@ local args, ops = shell.parse(...)
 local function showUsage()
     print('Run reclamation master task.')
     print('Usage:')
-    print('* recl - deploy reclamation drones')
-    print('* recl --checkMatList - check material list against the inventory in front')
+    print('* recl <y level> - deploy reclamation drones')
+    print('* recl <y level> --checkMatList - check material list against the inventory in front')
+end
+
+local yLevel = tonumber(args[1])
+if not yLevel then
+    showUsage()
+    return
 end
 
 local action = 'deploy'
 
-local schemFilePath = '/home/reclamation5_y16.data'
-local schemX, schemY, schemZ = 192, 16, -880
+local schemFilePath = '/home/reclamation5_y' .. yLevel .. '.data'
+local schemX, schemY, schemZ = 192, yLevel, -880
 
 if type(ops['checkMatList']) == 'boolean' then
     action = 'checkMatList'

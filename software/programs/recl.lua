@@ -39,7 +39,7 @@ for k, _v in pairs(ops) do
     return
 end
 
-if #args > 0 then
+if #args > 1 then
     showUsage()
     return
 end

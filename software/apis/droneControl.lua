@@ -44,12 +44,6 @@ function droneControl.makeEeprom()
     local buffer = file:read('a')
     file:close()
 
-    -- print('Size before minification: ' .. buffer:len() .. ' bytes')
-    -- -- this minification is dumb and doesnt always work. oh well.
-    -- buffer = buffer:gsub('[-][-][^\n]+', ''):gsub('\\s+', ' ')
-
-    -- print('Size after minification: ' .. buffer:len() .. ' bytes')
-
     local eeprom = component.eeprom
     if not eeprom then
         print('No eeprom found.')

@@ -1,4 +1,5 @@
 local nbt = require('tools.nbt')
+local bit = require("bit")
 
 local file = io.open('./tools/reclamation5_y20.nbt') --[[@as file*]]
 local content = file:read('a')
@@ -39,7 +40,7 @@ end
 local palette = {}
 local materialList = {}
 
-local outFile = io.open('./tools/reclamation5_y19.data', 'w+b') --[[@as file*]]
+local outFile = io.open('./tools/reclamation5_y20.data', 'w+b') --[[@as file*]]
 
 outFile:write(string.pack('>I4>I4>I4', xlength, ylength, zlength))
 
@@ -50,11 +51,11 @@ local function getBlock(x, y, z)
     local dataVal = toUnsignedByte(dataArr[index + 1])
     local addBlockId = toUnsignedByte(addBlocksArr[math.floor(index / 2) + 1])
     if index % 2 == 0 then
-        addBlockId = (addBlockId >> 4) & 0xF
+        addBlockId = bit.band(bit.rshift(addBlockId, 4), 0xF)
     else
-        addBlockId = addBlockId & 0xF
+        addBlockId = bit.band(addBlockId, 0xF)
     end
-    local fullblockid = (addBlockId << 8) | blockId
+    local fullblockid = bit.bor(bit.lshift(addBlockId, 8), blockId)
 
     local te = tileEntityMap[string.format('%s,%s,%s', x, y, z)]
 
@@ -157,9 +158,9 @@ local bitIndex = 0
 local currByte = 0
 
 local function writeNextChunkPresenceBit(bool)
-    local bit = 0
-    if bool then bit = 1 end
-    currByte = currByte << 1 | bit
+    local b = 0
+    if bool then b = 1 end
+    currByte = bit.bor(bit.lshift(currByte, 1), b)
 
     if bitIndex == 7 then
         print(currByte)

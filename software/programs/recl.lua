@@ -61,6 +61,8 @@ local substitutions = {
     ['2478'] = '0',
     -- amethyst bud (will grow back)
     ['2298:9'] = '0',
+    ['2298:8'] = '0',
+    ['2298:11'] = '0',
     -- etfuturem deepslate redstone ore to gt
     ['2303'] = '2711:810',
     -- railcraft dark ores to gt
@@ -74,8 +76,10 @@ local substitutions = {
     ['54:2'] = '2055',       -- chest
     ['54:3'] = '2055',       -- chest
     ['54:5'] = '2055',       -- chest
-    ['50:3'] = '2055',       -- torch
+    ['50:1'] = '2055',       -- torch
     ['50:2'] = '2055',       -- torch
+    ['50:3'] = '2055',       -- torch
+    ['50:4'] = '2055',       -- torch
 }
 
 if action == 'checkMatList' then

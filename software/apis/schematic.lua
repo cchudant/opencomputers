@@ -61,7 +61,15 @@ function schematic.Schematic.load(filename, matSubstitutions)
         local strlen = string.unpack('>I4', file:read(4))
         local matkey = file:read(strlen)
         palette[matkey] = matId
-        revPalette[matId] = matSubstitutions[matkey] or matkey
+
+        local substitution = matSubstitutions[matkey]
+        local id, _damage = matkey:match("^([^:]+):?(.*)$")
+        if not substitution and id then
+            -- wildcard substitution
+            substitution = matSubstitutions[id .. ':*']
+        end
+
+        revPalette[matId] = substitution or matkey
     end
 
     local addedMats = {}

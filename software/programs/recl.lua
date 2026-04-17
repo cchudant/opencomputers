@@ -52,17 +52,12 @@ local lqds = {
 }
 
 local substitutions = {
-    -- cave vines
-    ['2480'] = '0',
-    ['2480:1'] = '0',
-    ['2479'] = '0',
-    ['2479:1'] = '0',
-    -- glow lichen
-    ['2478'] = '0',
+    -- cave vines, glow berry, glow lichen
+    ['2480:*'] = '0',
+    ['2479:*'] = '0',
+    ['2478:*'] = '0',
     -- amethyst bud (will grow back)
-    ['2298:9'] = '0',
-    ['2298:8'] = '0',
-    ['2298:11'] = '0',
+    ['2298:*'] = '0',
     -- etfuturem deepslate redstone ore to gt
     ['2303'] = '2711:810',
     -- railcraft dark ores to gt
@@ -73,14 +68,9 @@ local substitutions = {
     ['411'] = '2055',        -- thaumcraft node
     ['52'] = '2055',         -- mob spawner
     ['2711'] = '2055',       -- buggy gt ore?
-    ['54:2'] = '2055',       -- chest
-    ['54:3'] = '2055',       -- chest
-    ['54:4'] = '2055',       -- chest
-    ['54:5'] = '2055',       -- chest
-    ['50:1'] = '2055',       -- torch
-    ['50:2'] = '2055',       -- torch
-    ['50:3'] = '2055',       -- torch
-    ['50:4'] = '2055',       -- torch
+    ['54:*'] = '2055',       -- chest
+    ['50:*'] = '2055',       -- torch
+    ['106:*'] = '2055',      -- vine
     ['880:15'] = '2055',     -- roots from biomes o plenty
 }
 

@@ -58,8 +58,11 @@ local substitutions = {
     ['2478:*'] = '0',
     -- amethyst bud (will grow back)
     ['2298:*'] = '0',
+    ['2297:*'] = '0',
     -- etfuturem deepslate redstone ore to gt
     ['2303'] = '2711:810',
+    -- vanilla redstone ore to gt
+    ['73'] = '2711:810',
     -- railcraft dark ores to gt
     ['1096:2'] = '2711:500', -- diamond
     ['1096:3'] = '2711:501', -- emerald
@@ -71,6 +74,8 @@ local substitutions = {
     ['54:*'] = '2055',       -- chest
     ['50:*'] = '2055',       -- torch
     ['106:*'] = '2055',      -- vine
+    ['67:*'] = '2055',       -- cobblestone stairs
+    ['146:*'] = '2055',      -- trapped chest
     ['880:15'] = '2055',     -- roots from biomes o plenty
 }
 
